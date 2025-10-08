@@ -229,51 +229,29 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {/* Vote Breakdown */}
-                <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="grid grid-cols-2 gap-3 text-center">
                   <div>
                     <div className="text-2xl font-bold text-green-600">
                       {recommendedSlot.available_count}
                     </div>
-                    <div className="text-sm text-foreground/60">Can make it</div>
+                    <div className="text-sm text-foreground/60">Available</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-yellow-600">
-                      {recommendedSlot.maybe_count}
-                    </div>
-                    <div className="text-sm text-foreground/60">Maybe</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-red-600">
+                    <div className="text-2xl font-bold text-foreground/40">
                       {recommendedSlot.unavailable_count}
                     </div>
-                    <div className="text-sm text-foreground/60">Can&apos;t make it</div>
+                    <div className="text-sm text-foreground/60">Not available</div>
                   </div>
                 </div>
 
                 {/* Visual Bar */}
                 {recommendedSlot.votes.length > 0 && (
-                  <div className="h-4 rounded-full overflow-hidden flex">
+                  <div className="h-4 rounded-full overflow-hidden flex bg-foreground/10">
                     {recommendedSlot.available_count > 0 && (
                       <div
                         className="bg-green-600"
                         style={{
                           width: `${(recommendedSlot.available_count / recommendedSlot.votes.length) * 100}%`,
-                        }}
-                      />
-                    )}
-                    {recommendedSlot.maybe_count > 0 && (
-                      <div
-                        className="bg-yellow-600"
-                        style={{
-                          width: `${(recommendedSlot.maybe_count / recommendedSlot.votes.length) * 100}%`,
-                        }}
-                      />
-                    )}
-                    {recommendedSlot.unavailable_count > 0 && (
-                      <div
-                        className="bg-red-600"
-                        style={{
-                          width: `${(recommendedSlot.unavailable_count / recommendedSlot.votes.length) * 100}%`,
                         }}
                       />
                     )}
@@ -326,41 +304,22 @@ export default function DashboardPage() {
                     )}
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                  <div className="grid grid-cols-2 gap-2 text-center text-sm">
                     <div className="text-green-600">
-                      ✓ {slot.available_count}
+                      ✓ {slot.available_count} available
                     </div>
-                    <div className="text-yellow-600">
-                      ? {slot.maybe_count}
-                    </div>
-                    <div className="text-red-600">
-                      ✗ {slot.unavailable_count}
+                    <div className="text-foreground/60">
+                      ✗ {slot.unavailable_count} not available
                     </div>
                   </div>
 
                   {slot.votes.length > 0 && (
-                    <div className="mt-2 h-2 rounded-full overflow-hidden flex">
+                    <div className="mt-2 h-2 rounded-full overflow-hidden flex bg-foreground/10">
                       {slot.available_count > 0 && (
                         <div
                           className="bg-green-600"
                           style={{
                             width: `${(slot.available_count / slot.votes.length) * 100}%`,
-                          }}
-                        />
-                      )}
-                      {slot.maybe_count > 0 && (
-                        <div
-                          className="bg-yellow-600"
-                          style={{
-                            width: `${(slot.maybe_count / slot.votes.length) * 100}%`,
-                          }}
-                        />
-                      )}
-                      {slot.unavailable_count > 0 && (
-                        <div
-                          className="bg-red-600"
-                          style={{
-                            width: `${(slot.unavailable_count / slot.votes.length) * 100}%`,
                           }}
                         />
                       )}
@@ -390,16 +349,11 @@ export default function DashboardPage() {
                 )}
                 <div className="mt-3 text-sm">
                   <span className="text-green-600 font-medium">
-                    {selectedSlot.available_count} can make it
+                    {selectedSlot.available_count} available
                   </span>
-                  {selectedSlot.maybe_count > 0 && (
-                    <span className="text-foreground/60">
-                      {' '}· {selectedSlot.maybe_count} maybe
-                    </span>
-                  )}
                   {selectedSlot.unavailable_count > 0 && (
                     <span className="text-foreground/60">
-                      {' '}· {selectedSlot.unavailable_count} can&apos;t make it
+                      {' '}· {selectedSlot.unavailable_count} not available
                     </span>
                   )}
                 </div>

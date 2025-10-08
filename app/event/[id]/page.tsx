@@ -8,10 +8,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { getEventWithDetails, EventWithDetails, Vote, supabase } from '@/lib/supabase';
 import { getUserCookieId, formatDateTime } from '@/lib/utils';
 
-type Availability = 'available' | 'maybe' | 'unavailable';
-
 interface VoteState {
-  [timeslotId: string]: Availability;
+  [timeslotId: string]: boolean; // true = available, false/undefined = not selected
 }
 
 export default function EventVotingPage() {
@@ -80,7 +78,8 @@ export default function EventVotingPage() {
       if (existingVotes && existingVotes.length > 0) {
         const voteState: VoteState = {};
         existingVotes.forEach((vote: Vote) => {
-          voteState[vote.timeslot_id] = vote.availability;
+          // Only mark as selected if availability is 'available'
+          voteState[vote.timeslot_id] = vote.availability === 'available';
         });
         setVotes(voteState);
         setHasVoted(true);
@@ -92,33 +91,26 @@ export default function EventVotingPage() {
     loadEventAndVotes();
   }, [eventId, router]);
 
-  const handleVote = (timeslotId: string, availability: Availability) => {
-    setVotes({ ...votes, [timeslotId]: availability });
+  const handleToggle = (timeslotId: string) => {
+    setVotes({ ...votes, [timeslotId]: !votes[timeslotId] });
   };
 
   const handleSubmit = async () => {
     if (!event) return;
 
-    // Validate all slots have votes
-    const allSlotsVoted = event.time_slots.every(slot => votes[slot.timeslot_id]);
-    if (!allSlotsVoted) {
-      alert('Please vote on all time slots');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      // Submit votes via API
+      // Submit votes via API - send all timeslots with their availability
       const response = await fetch(`/api/events/${eventId}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cookieId,
           displayName: displayName || null,
-          votes: Object.entries(votes).map(([timeslotId, availability]) => ({
-            timeslotId,
-            availability,
+          votes: event.time_slots.map(slot => ({
+            timeslotId: slot.timeslot_id,
+            availability: votes[slot.timeslot_id] ? 'available' : 'unavailable',
           })),
         }),
       });
@@ -169,24 +161,20 @@ export default function EventVotingPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <p className="text-sm font-medium text-foreground/60">Your Votes:</p>
-                {event?.time_slots.map(slot => (
-                  <div key={slot.timeslot_id} className="flex items-center justify-between py-2 border-b border-foreground/10 last:border-0">
-                    <div className="text-sm">
-                      <div className="font-medium">{formatDateTime(slot.start_time)}</div>
-                      {slot.label && <div className="text-foreground/60">{slot.label}</div>}
+                <p className="text-sm font-medium text-foreground/60">Times you selected:</p>
+                {event?.time_slots.filter(slot => votes[slot.timeslot_id]).length === 0 ? (
+                  <p className="text-sm text-foreground/60 py-4">You didn't select any times as available</p>
+                ) : (
+                  event?.time_slots.filter(slot => votes[slot.timeslot_id]).map(slot => (
+                    <div key={slot.timeslot_id} className="flex items-center gap-3 py-2 border-b border-foreground/10 last:border-0">
+                      <div className="text-green-600">✓</div>
+                      <div className="text-sm flex-1">
+                        <div className="font-medium">{formatDateTime(slot.start_time)}</div>
+                        {slot.label && <div className="text-foreground/60">{slot.label}</div>}
+                      </div>
                     </div>
-                    <div className={`text-sm font-medium ${
-                      votes[slot.timeslot_id] === 'available' ? 'text-green-600' :
-                      votes[slot.timeslot_id] === 'maybe' ? 'text-yellow-600' :
-                      'text-red-600'
-                    }`}>
-                      {votes[slot.timeslot_id] === 'available' ? '✓ Can make it' :
-                       votes[slot.timeslot_id] === 'maybe' ? '? Maybe' :
-                       '✗ Can\'t make it'}
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -204,8 +192,7 @@ export default function EventVotingPage() {
     );
   }
 
-  const votedCount = Object.keys(votes).length;
-  const totalSlots = event?.time_slots.length || 0;
+  const selectedCount = Object.values(votes).filter(Boolean).length;
 
   // Show locked state
   if (event?.status === 'locked' && event.locked_time) {
@@ -304,59 +291,43 @@ export default function EventVotingPage() {
 
           {/* Voting Prompt */}
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold mb-2">What time can you make it?</h2>
+            <h2 className="text-2xl font-bold mb-2">What times work for you?</h2>
             <p className="text-foreground/60">
-              {hasVoted ? 'You can update your votes anytime' : 'Vote on each time slot below'}
+              {hasVoted ? 'You can update your availability anytime' : 'Select all times that work for you'}
             </p>
           </div>
 
           {/* Time Slots */}
-          <div className="space-y-4 mb-6">
+          <div className="space-y-3 mb-6">
             {event?.time_slots.map((slot) => (
-              <Card key={slot.timeslot_id} className="p-4">
-                <div className="mb-3">
+              <button
+                key={slot.timeslot_id}
+                onClick={() => handleToggle(slot.timeslot_id)}
+                className={`w-full p-4 rounded-lg border-2 transition-all text-left flex items-center gap-4 min-h-[72px] ${
+                  votes[slot.timeslot_id]
+                    ? 'border-green-600 bg-green-600/10'
+                    : 'border-foreground/20 hover:border-foreground/40'
+                }`}
+              >
+                {/* Checkbox */}
+                <div className={`flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                  votes[slot.timeslot_id]
+                    ? 'bg-green-600 border-green-600'
+                    : 'border-foreground/40'
+                }`}>
+                  {votes[slot.timeslot_id] && (
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+
+                {/* Time Info */}
+                <div className="flex-1">
                   <div className="font-semibold">{formatDateTime(slot.start_time)}</div>
                   {slot.label && <div className="text-sm text-foreground/60">{slot.label}</div>}
                 </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={() => handleVote(slot.timeslot_id, 'available')}
-                    className={`py-3 px-4 rounded-lg border-2 transition-all min-h-[64px] ${
-                      votes[slot.timeslot_id] === 'available'
-                        ? 'border-green-600 bg-green-600/10 text-green-600 font-medium'
-                        : 'border-foreground/20 hover:border-green-600/50'
-                    }`}
-                  >
-                    <div className="text-lg mb-1">✓</div>
-                    <div className="text-xs">Can make it</div>
-                  </button>
-
-                  <button
-                    onClick={() => handleVote(slot.timeslot_id, 'maybe')}
-                    className={`py-3 px-4 rounded-lg border-2 transition-all min-h-[64px] ${
-                      votes[slot.timeslot_id] === 'maybe'
-                        ? 'border-yellow-600 bg-yellow-600/10 text-yellow-600 font-medium'
-                        : 'border-foreground/20 hover:border-yellow-600/50'
-                    }`}
-                  >
-                    <div className="text-lg mb-1">?</div>
-                    <div className="text-xs">Maybe</div>
-                  </button>
-
-                  <button
-                    onClick={() => handleVote(slot.timeslot_id, 'unavailable')}
-                    className={`py-3 px-4 rounded-lg border-2 transition-all min-h-[64px] ${
-                      votes[slot.timeslot_id] === 'unavailable'
-                        ? 'border-red-600 bg-red-600/10 text-red-600 font-medium'
-                        : 'border-foreground/20 hover:border-red-600/50'
-                    }`}
-                  >
-                    <div className="text-lg mb-1">✗</div>
-                    <div className="text-xs">Can&apos;t make it</div>
-                  </button>
-                </div>
-              </Card>
+              </button>
             ))}
           </div>
 
@@ -378,11 +349,10 @@ export default function EventVotingPage() {
               size="lg"
               onClick={handleSubmit}
               isLoading={isSubmitting}
-              disabled={votedCount !== totalSlots}
               className="w-full"
             >
-              {hasVoted ? 'Update My Votes' : 'Submit My Availability'}
-              {votedCount < totalSlots && ` (${votedCount}/${totalSlots} voted)`}
+              {hasVoted ? 'Update My Availability' : 'Submit My Availability'}
+              {selectedCount > 0 && ` (${selectedCount} selected)`}
             </Button>
           </div>
         </div>
@@ -395,11 +365,10 @@ export default function EventVotingPage() {
             size="lg"
             onClick={handleSubmit}
             isLoading={isSubmitting}
-            disabled={votedCount !== totalSlots}
             className="w-full min-h-[48px]"
           >
-            {hasVoted ? 'Update My Votes' : 'Submit My Availability'}
-            {votedCount < totalSlots && ` (${votedCount}/${totalSlots})`}
+            {hasVoted ? 'Update My Availability' : 'Submit My Availability'}
+            {selectedCount > 0 && ` (${selectedCount})`}
           </Button>
         </div>
       </div>
