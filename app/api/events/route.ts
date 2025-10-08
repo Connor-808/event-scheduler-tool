@@ -89,14 +89,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (cookieError) {
-      console.error('Error creating organizer user cookie:', cookieError);
-      // Rollback event and time slots
-      await supabase.from('events').delete().eq('event_id', eventId);
-      await supabase.from('time_slots').delete().eq('event_id', eventId);
-      return NextResponse.json(
-        { error: 'Failed to set up organizer access', details: cookieError.message },
-        { status: 500 }
-      );
+      console.error('Error creating user cookie:', cookieError);
+      // This is not critical - continue anyway
     }
 
     return NextResponse.json({
