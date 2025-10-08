@@ -284,104 +284,124 @@ export default function EventVotingPage() {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Event Header */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>{event?.title}</CardTitle>
-            {event?.location && <CardDescription>📍 {event.location}</CardDescription>}
-            {hasVoted && (
-              <div className="pt-2">
-                <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 rounded-full">
-                  You voted {event?.participants.find(p => p.cookie_id === cookieId)?.last_active ? new Date(event.participants.find(p => p.cookie_id === cookieId)!.last_active).toLocaleTimeString() : ''}
-                </span>
-              </div>
-            )}
-          </CardHeader>
-        </Card>
+    <div className="min-h-screen pb-32 sm:pb-12">
+      <div className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto">
+          {/* Event Header */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>{event?.title}</CardTitle>
+              {event?.location && <CardDescription>📍 {event.location}</CardDescription>}
+              {hasVoted && (
+                <div className="pt-2">
+                  <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 rounded-full">
+                    You voted {event?.participants.find(p => p.cookie_id === cookieId)?.last_active ? new Date(event.participants.find(p => p.cookie_id === cookieId)!.last_active).toLocaleTimeString() : ''}
+                  </span>
+                </div>
+              )}
+            </CardHeader>
+          </Card>
 
-        {/* Voting Prompt */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold mb-2">What time can you make it?</h2>
-          <p className="text-foreground/60">
-            {hasVoted ? 'You can update your votes anytime' : 'Vote on each time slot below'}
-          </p>
+          {/* Voting Prompt */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold mb-2">What time can you make it?</h2>
+            <p className="text-foreground/60">
+              {hasVoted ? 'You can update your votes anytime' : 'Vote on each time slot below'}
+            </p>
+          </div>
+
+          {/* Time Slots */}
+          <div className="space-y-4 mb-6">
+            {event?.time_slots.map((slot) => (
+              <Card key={slot.timeslot_id} className="p-4">
+                <div className="mb-3">
+                  <div className="font-semibold">{formatDateTime(slot.start_time)}</div>
+                  {slot.label && <div className="text-sm text-foreground/60">{slot.label}</div>}
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => handleVote(slot.timeslot_id, 'available')}
+                    className={`py-3 px-4 rounded-lg border-2 transition-all min-h-[64px] ${
+                      votes[slot.timeslot_id] === 'available'
+                        ? 'border-green-600 bg-green-600/10 text-green-600 font-medium'
+                        : 'border-foreground/20 hover:border-green-600/50'
+                    }`}
+                  >
+                    <div className="text-lg mb-1">✓</div>
+                    <div className="text-xs">Can make it</div>
+                  </button>
+
+                  <button
+                    onClick={() => handleVote(slot.timeslot_id, 'maybe')}
+                    className={`py-3 px-4 rounded-lg border-2 transition-all min-h-[64px] ${
+                      votes[slot.timeslot_id] === 'maybe'
+                        ? 'border-yellow-600 bg-yellow-600/10 text-yellow-600 font-medium'
+                        : 'border-foreground/20 hover:border-yellow-600/50'
+                    }`}
+                  >
+                    <div className="text-lg mb-1">?</div>
+                    <div className="text-xs">Maybe</div>
+                  </button>
+
+                  <button
+                    onClick={() => handleVote(slot.timeslot_id, 'unavailable')}
+                    className={`py-3 px-4 rounded-lg border-2 transition-all min-h-[64px] ${
+                      votes[slot.timeslot_id] === 'unavailable'
+                        ? 'border-red-600 bg-red-600/10 text-red-600 font-medium'
+                        : 'border-foreground/20 hover:border-red-600/50'
+                    }`}
+                  >
+                    <div className="text-lg mb-1">✗</div>
+                    <div className="text-xs">Can&apos;t make it</div>
+                  </button>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {/* Display Name */}
+          <Card className="p-4 mb-6">
+            <Input
+              label="Your Name (Optional)"
+              placeholder="Anonymous"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              helperText="Help others identify you"
+              maxLength={50}
+            />
+          </Card>
+
+          {/* Desktop Submit Button - hidden on mobile */}
+          <div className="hidden sm:block">
+            <Button
+              size="lg"
+              onClick={handleSubmit}
+              isLoading={isSubmitting}
+              disabled={votedCount !== totalSlots}
+              className="w-full"
+            >
+              {hasVoted ? 'Update My Votes' : 'Submit My Availability'}
+              {votedCount < totalSlots && ` (${votedCount}/${totalSlots} voted)`}
+            </Button>
+          </div>
         </div>
+      </div>
 
-        {/* Time Slots */}
-        <div className="space-y-4 mb-6">
-          {event?.time_slots.map((slot) => (
-            <Card key={slot.timeslot_id} className="p-4">
-              <div className="mb-3">
-                <div className="font-semibold">{formatDateTime(slot.start_time)}</div>
-                {slot.label && <div className="text-sm text-foreground/60">{slot.label}</div>}
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={() => handleVote(slot.timeslot_id, 'available')}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all ${
-                    votes[slot.timeslot_id] === 'available'
-                      ? 'border-green-600 bg-green-600/10 text-green-600 font-medium'
-                      : 'border-foreground/20 hover:border-green-600/50'
-                  }`}
-                >
-                  <div className="text-lg mb-1">✓</div>
-                  <div className="text-xs">Can make it</div>
-                </button>
-
-                <button
-                  onClick={() => handleVote(slot.timeslot_id, 'maybe')}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all ${
-                    votes[slot.timeslot_id] === 'maybe'
-                      ? 'border-yellow-600 bg-yellow-600/10 text-yellow-600 font-medium'
-                      : 'border-foreground/20 hover:border-yellow-600/50'
-                  }`}
-                >
-                  <div className="text-lg mb-1">?</div>
-                  <div className="text-xs">Maybe</div>
-                </button>
-
-                <button
-                  onClick={() => handleVote(slot.timeslot_id, 'unavailable')}
-                  className={`py-3 px-4 rounded-lg border-2 transition-all ${
-                    votes[slot.timeslot_id] === 'unavailable'
-                      ? 'border-red-600 bg-red-600/10 text-red-600 font-medium'
-                      : 'border-foreground/20 hover:border-red-600/50'
-                  }`}
-                >
-                  <div className="text-lg mb-1">✗</div>
-                  <div className="text-xs">Can&apos;t make it</div>
-                </button>
-              </div>
-            </Card>
-          ))}
+      {/* Fixed Bottom CTA - Mobile Only */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-foreground/10 sm:hidden z-50">
+        <div className="px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          <Button
+            size="lg"
+            onClick={handleSubmit}
+            isLoading={isSubmitting}
+            disabled={votedCount !== totalSlots}
+            className="w-full min-h-[48px]"
+          >
+            {hasVoted ? 'Update My Votes' : 'Submit My Availability'}
+            {votedCount < totalSlots && ` (${votedCount}/${totalSlots})`}
+          </Button>
         </div>
-
-        {/* Display Name */}
-        <Card className="p-4 mb-6">
-          <Input
-            label="Your Name (Optional)"
-            placeholder="Anonymous"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            helperText="Help others identify you"
-            maxLength={50}
-          />
-        </Card>
-
-        {/* Submit Button */}
-        <Button
-          size="lg"
-          onClick={handleSubmit}
-          isLoading={isSubmitting}
-          disabled={votedCount !== totalSlots}
-          className="w-full"
-        >
-          {hasVoted ? 'Update My Votes' : 'Submit My Availability'}
-          {votedCount < totalSlots && ` (${votedCount}/${totalSlots} voted)`}
-        </Button>
       </div>
     </div>
   );

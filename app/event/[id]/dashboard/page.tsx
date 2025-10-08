@@ -165,7 +165,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex gap-3">
-            <Button variant="secondary" onClick={handleCopyLink}>
+            <Button variant="secondary" onClick={handleCopyLink} className="min-h-[44px]">
               {copied ? 'Copied!' : 'Copy Link'}
             </Button>
           </div>
@@ -283,7 +283,7 @@ export default function DashboardPage() {
                 <Button
                   size="lg"
                   onClick={() => handleLockClick(recommendedSlot)}
-                  className="w-full"
+                  className="w-full min-h-[48px]"
                 >
                   Lock In This Time
                 </Button>
@@ -319,6 +319,7 @@ export default function DashboardPage() {
                         variant="secondary"
                         size="sm"
                         onClick={() => handleLockClick(slot)}
+                        className="min-h-[44px]"
                       >
                         Select This Time
                       </Button>
@@ -409,10 +410,10 @@ export default function DashboardPage() {
               </p>
 
               <ModalFooter>
-                <Button variant="secondary" onClick={() => setLockModalOpen(false)}>
+                <Button variant="secondary" onClick={() => setLockModalOpen(false)} className="min-h-[44px]">
                   Cancel
                 </Button>
-                <Button onClick={handleLockConfirm} isLoading={isLocking}>
+                <Button onClick={handleLockConfirm} isLoading={isLocking} className="min-h-[44px]">
                   Yes, Lock It In
                 </Button>
               </ModalFooter>
