@@ -84,6 +84,7 @@ export async function POST(
         return supabase.from('votes').insert({
           timeslot_id: timeslotId,
           cookie_id: cookieId,
+          event_id: eventId,
           availability,
         });
       }

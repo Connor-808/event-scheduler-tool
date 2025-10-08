@@ -28,14 +28,14 @@
 ┌────────────────────┐         │    ┌────────────────────┐        │
 │   TIME_SLOTS       │         │    │   USER_COOKIES     │        │
 ├────────────────────┤         │    ├────────────────────┤        │
-│ timeslot_id   UUID │ PK      │    │ cookie_id     UUID │ PK     │
-│ event_id      TEXT │ FK ─────┘    │ event_id      TEXT │ FK ────┘
+│ timeslot_id   UUID │ PK      │    │ cookie_id     UUID │ PK (1) │
+│ event_id      TEXT │ FK ─────┘    │ event_id      TEXT │ FK/PK (2)
 │ start_time    TS   │              │ display_name  TEXT │
 │ end_time      TS   │              │ is_organizer  BOOL │
 │ label         TEXT │              │ created_at    TS   │
 │ created_at    TS   │              │ last_active   TS   │
-└────────────────────┘              └────────────────────┘
-        │                                    │
+└────────────────────┘              │ PK: (cookie_id, event_id)
+        │                           └────────────────────┘
         │ 1                                  │ 1
         │                                    │
         │ receives                           │ submits
@@ -46,11 +46,13 @@
                      ├────────────────────┤
                      │ vote_id       UUID │ PK
                      │ timeslot_id   UUID │ FK → time_slots
-                     │ cookie_id     UUID │ FK → user_cookies
+                     │ cookie_id     UUID │ FK (composite)
+                     │ event_id      TEXT │ FK (composite)
                      │ availability  TEXT │ CHECK: available|maybe|unavailable
                      │ created_at    TS   │
                      │ updated_at    TS   │
                      │ UNIQUE(timeslot_id, cookie_id) │
+                     │ FK: (cookie_id, event_id) → user_cookies │
                      └────────────────────┘
 ```
 
@@ -177,10 +179,8 @@ CREATE INDEX idx_time_slots_start_time ON time_slots(start_time);
 **Schema**:
 ```sql
 CREATE TABLE user_cookies (
-  -- Primary identifier (stored in user's browser cookie)
-  cookie_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  
-  -- Event participation
+  -- Composite primary key (cookie can participate in multiple events)
+  cookie_id UUID NOT NULL,
   event_id TEXT NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
   
   -- User information (optional)
@@ -189,7 +189,10 @@ CREATE TABLE user_cookies (
   
   -- Activity tracking
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  last_active TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  last_active TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  
+  -- Composite primary key
+  PRIMARY KEY (cookie_id, event_id)
 );
 
 -- Indexes for performance
@@ -241,7 +244,8 @@ CREATE TABLE votes (
   
   -- Relationships
   timeslot_id UUID NOT NULL REFERENCES time_slots(timeslot_id) ON DELETE CASCADE,
-  cookie_id UUID NOT NULL REFERENCES user_cookies(cookie_id) ON DELETE CASCADE,
+  cookie_id UUID NOT NULL,
+  event_id TEXT NOT NULL,
   
   -- Vote data
   availability TEXT NOT NULL CHECK (availability IN ('available', 'maybe', 'unavailable')),
@@ -251,7 +255,9 @@ CREATE TABLE votes (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   
   -- Constraints
-  UNIQUE(timeslot_id, cookie_id) -- One vote per user per time slot
+  UNIQUE(timeslot_id, cookie_id), -- One vote per user per time slot
+  FOREIGN KEY (cookie_id, event_id) REFERENCES user_cookies(cookie_id, event_id) ON DELETE CASCADE,
+  FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE CASCADE
 );
 
 -- Indexes for performance
