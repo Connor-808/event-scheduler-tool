@@ -49,6 +49,16 @@ export default function DashboardPage() {
 
       if (!organizer) {
         // Not organizer, redirect to voting page
+        console.log('Dashboard access denied:', {
+          cookieId,
+          eventId,
+          participantCount: eventData.participants.length,
+          participants: eventData.participants.map(p => ({
+            cookie_id: p.cookie_id,
+            is_organizer: p.is_organizer,
+            matches: p.cookie_id === cookieId
+          }))
+        });
         router.push(`/event/${eventId}`);
         return;
       }
