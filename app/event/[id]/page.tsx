@@ -163,7 +163,7 @@ export default function EventVotingPage() {
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground/60">Times you selected:</p>
                 {event?.time_slots.filter(slot => votes[slot.timeslot_id]).length === 0 ? (
-                  <p className="text-sm text-foreground/60 py-4">You didn't select any times as available</p>
+                  <p className="text-sm text-foreground/60 py-4">You didn&apos;t select any times as available</p>
                 ) : (
                   event?.time_slots.filter(slot => votes[slot.timeslot_id]).map(slot => (
                     <div key={slot.timeslot_id} className="flex items-center gap-3 py-2 border-b border-foreground/10 last:border-0">
