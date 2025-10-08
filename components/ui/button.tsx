@@ -10,23 +10,24 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, disabled, children, ...props }, ref) => {
     const baseStyles =
-      'inline-flex items-center justify-center rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
+      'inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 select-none touch-manipulation';
 
     const variants = {
       primary:
-        'bg-foreground text-background hover:bg-foreground/90 focus-visible:ring-foreground',
+        'bg-foreground text-background hover:bg-foreground/90 active:scale-[0.98] active:bg-foreground/80 focus-visible:ring-foreground shadow-sm hover:shadow-md',
       secondary:
-        'border-2 border-foreground/20 bg-transparent text-foreground hover:bg-foreground/5 focus-visible:ring-foreground/50',
+        'border-2 border-foreground/20 bg-transparent text-foreground hover:bg-foreground/5 hover:border-foreground/30 active:scale-[0.98] active:bg-foreground/10 focus-visible:ring-foreground/50',
       tertiary:
-        'text-foreground hover:bg-foreground/10 focus-visible:ring-foreground/50',
+        'text-foreground hover:bg-foreground/10 active:bg-foreground/15 active:scale-[0.98] focus-visible:ring-foreground/50',
       destructive:
-        'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600',
+        'bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] active:bg-red-800 focus-visible:ring-red-600 shadow-sm hover:shadow-md',
     };
 
+    // Enhanced mobile-first sizing with minimum 44px touch targets
     const sizes = {
-      sm: 'h-9 px-4 text-sm',
-      md: 'h-11 px-6 text-base',
-      lg: 'h-12 px-8 text-lg',
+      sm: 'min-h-[44px] h-10 px-4 text-sm sm:h-9 sm:min-h-0',
+      md: 'min-h-[44px] h-12 px-6 text-base sm:h-11',
+      lg: 'min-h-[48px] h-14 px-8 text-base sm:text-lg',
     };
 
     return (
@@ -58,7 +59,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
             </svg>
-            Loading...
+            <span>Loading...</span>
           </>
         ) : (
           children

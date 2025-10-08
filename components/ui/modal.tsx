@@ -40,10 +40,10 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -51,8 +51,11 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
       {/* Modal */}
       <div
         className={cn(
-          'relative w-full rounded-2xl bg-background p-6 shadow-xl',
-          'animate-in fade-in-0 zoom-in-95',
+          'relative w-full bg-background shadow-2xl',
+          'rounded-t-2xl sm:rounded-2xl',
+          'p-5 sm:p-6',
+          'max-h-[90vh] overflow-y-auto',
+          'animate-in fade-in-0 slide-in-from-bottom-4 sm:zoom-in-95',
           sizes[size]
         )}
         role="dialog"
@@ -60,10 +63,10 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
         aria-labelledby={title ? 'modal-title' : undefined}
         aria-describedby={description ? 'modal-description' : undefined}
       >
-        {/* Close button */}
+        {/* Close button - larger touch target on mobile */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-2 text-foreground/60 hover:bg-foreground/10 hover:text-foreground transition-colors"
+          className="absolute right-4 top-4 sm:right-5 sm:top-5 rounded-full p-2 sm:p-2.5 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 flex items-center justify-center text-foreground/60 hover:bg-foreground/10 hover:text-foreground active:bg-foreground/15 transition-colors touch-manipulation"
           aria-label="Close"
         >
           <svg
@@ -84,14 +87,14 @@ export function Modal({ isOpen, onClose, title, description, children, size = 'm
 
         {/* Header */}
         {(title || description) && (
-          <div className="mb-6 pr-8">
+          <div className="mb-5 sm:mb-6 pr-12">
             {title && (
-              <h2 id="modal-title" className="text-2xl font-semibold">
+              <h2 id="modal-title" className="text-xl sm:text-2xl font-bold leading-tight">
                 {title}
               </h2>
             )}
             {description && (
-              <p id="modal-description" className="mt-2 text-sm text-foreground/60">
+              <p id="modal-description" className="mt-2 text-sm sm:text-base text-foreground/60 leading-relaxed">
                 {description}
               </p>
             )}
@@ -110,7 +113,7 @@ export type ModalFooterProps = HTMLAttributes<HTMLDivElement>;
 export function ModalFooter({ className, ...props }: ModalFooterProps) {
   return (
     <div
-      className={cn('mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3', className)}
+      className={cn('mt-5 sm:mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3', className)}
       {...props}
     />
   );

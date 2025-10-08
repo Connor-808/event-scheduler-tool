@@ -72,11 +72,11 @@ export default function SharePage() {
 
   return (
     <div className="min-h-screen pb-40 sm:pb-12">
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
+      <div className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           {/* Success Animation */}
-          <div className="text-center mb-8 animate-in fade-in zoom-in duration-300">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/20 mb-4">
+          <div className="text-center mb-8 sm:mb-10 animate-in fade-in zoom-in duration-300">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/20 mb-4 shadow-lg">
               <svg
                 className="w-10 h-10 text-green-600 dark:text-green-400"
                 fill="none"
@@ -91,27 +91,27 @@ export default function SharePage() {
                 />
               </svg>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2">Event Created!</h1>
-            <p className="text-lg text-foreground/60">Share this link with your friends</p>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">Event Created!</h1>
+            <p className="text-base sm:text-lg text-foreground/70">Share this link with your friends</p>
           </div>
 
           {/* Event Details */}
-          <Card className="mb-6">
-            <div className="space-y-4">
+          <Card className="mb-6 sm:mb-8">
+            <div className="space-y-4 sm:space-y-5">
               <div>
-                <h2 className="text-2xl font-semibold mb-2">{event?.title}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold mb-2">{event?.title}</h2>
                 {event?.location && (
-                  <p className="text-foreground/60">📍 {event.location}</p>
+                  <p className="text-base text-foreground/70">📍 {event.location}</p>
                 )}
               </div>
 
               <div className="pt-4 border-t border-foreground/10">
-                <p className="text-sm font-medium text-foreground/60 mb-2">
+                <p className="text-sm font-semibold text-foreground/70 mb-3">
                   Proposed Times ({event?.time_slots.length})
                 </p>
-                <div className="space-y-1 text-sm">
+                <div className="space-y-2 text-sm sm:text-base">
                   {event?.time_slots.slice(0, 3).map((slot) => (
-                    <div key={slot.timeslot_id} className="text-foreground/80">
+                    <div key={slot.timeslot_id} className="text-foreground/80 font-medium">
                       {new Date(slot.start_time).toLocaleDateString('en-US', {
                         weekday: 'short',
                         month: 'short',
@@ -123,7 +123,7 @@ export default function SharePage() {
                     </div>
                   ))}
                   {event && event.time_slots.length > 3 && (
-                    <div className="text-foreground/60">
+                    <div className="text-foreground/70 text-sm">
                       +{event.time_slots.length - 3} more
                     </div>
                   )}
@@ -133,21 +133,21 @@ export default function SharePage() {
           </Card>
 
           {/* Shareable Link */}
-          <Card className="mb-6">
+          <Card className="mb-6 sm:mb-8">
             <div className="space-y-4">
-              <label className="block text-sm font-medium">
+              <label className="block text-sm font-semibold">
                 Shareable Link
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   value={shareUrl}
                   readOnly
-                  className="flex-1 px-4 py-2 text-sm border border-foreground/20 rounded-lg bg-foreground/5 focus:outline-none select-all"
+                  className="flex-1 px-4 py-3 text-sm sm:text-base border-2 border-foreground/20 rounded-lg bg-foreground/5 focus:outline-none focus:border-foreground select-all font-mono"
                   onClick={(e) => e.currentTarget.select()}
                 />
-                <Button onClick={handleCopyLink} variant="secondary">
-                  {copied ? 'Copied!' : 'Copy'}
+                <Button onClick={handleCopyLink} variant="secondary" className="sm:min-w-[100px]">
+                  {copied ? '✓ Copied!' : 'Copy'}
                 </Button>
               </div>
             </div>
@@ -180,16 +180,16 @@ export default function SharePage() {
           </div>
 
           {/* Helper Text */}
-          <div className="mt-8 text-center text-sm text-foreground/60">
-            <p>Bookmark this page to return to your organizer dashboard later.</p>
+          <div className="mt-8 text-center text-sm sm:text-base text-foreground/70">
+            <p className="leading-relaxed">💡 Bookmark this page to return to your organizer dashboard later.</p>
           </div>
         </div>
       </div>
 
       {/* Fixed Bottom CTA - Mobile Only */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-foreground/10 sm:hidden z-50">
-        <div className="px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] space-y-3">
-          <Button onClick={handleShare} size="lg" className="w-full min-h-[48px]">
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
+        <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-3">
+          <Button onClick={handleShare} size="lg" className="w-full min-h-[52px] shadow-lg">
             <svg
               className="w-5 h-5 mr-2"
               fill="none"
@@ -207,7 +207,7 @@ export default function SharePage() {
           </Button>
 
           <Link href={`/event/${eventId}/dashboard`} className="block">
-            <Button variant="secondary" size="lg" className="w-full min-h-[48px]">
+            <Button variant="secondary" size="lg" className="w-full min-h-[52px]">
               View Dashboard
             </Button>
           </Link>

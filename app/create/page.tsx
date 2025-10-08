@@ -176,85 +176,85 @@ export default function CreateEventPage() {
 
   return (
     <div className="min-h-screen pb-32 sm:pb-12">
-      <div className="py-12 px-4 sm:px-6 lg:px-8">
+      <div className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           {/* Progress Indicator */}
-          <div className="mb-8">
-            <div className="flex items-center justify-center gap-2">
-              <div className={`h-2 w-16 rounded-full ${step === 'time-selection' ? 'bg-foreground' : 'bg-foreground/20'}`} />
-              <div className={`h-2 w-16 rounded-full ${step === 'event-details' ? 'bg-foreground' : 'bg-foreground/20'}`} />
+          <div className="mb-8 sm:mb-10">
+            <div className="flex items-center justify-center gap-2 sm:gap-3">
+              <div className={`h-2 w-20 sm:w-24 rounded-full transition-all duration-300 ${step === 'time-selection' ? 'bg-foreground' : 'bg-foreground/20'}`} />
+              <div className={`h-2 w-20 sm:w-24 rounded-full transition-all duration-300 ${step === 'event-details' ? 'bg-foreground' : 'bg-foreground/20'}`} />
             </div>
-            <p className="text-center text-sm text-foreground/60 mt-2">
+            <p className="text-center text-sm sm:text-base text-foreground/70 mt-3 font-medium">
               {step === 'time-selection' ? 'Step 1 of 2: Choose Times' : 'Step 2 of 2: Event Details'}
             </p>
           </div>
 
           {step === 'time-selection' && (
-            <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <h1 className="text-3xl sm:text-4xl font-bold">When should we meet?</h1>
-                <p className="text-foreground/60">Choose preset times or create your own</p>
+            <div className="space-y-6 sm:space-y-8">
+              <div className="text-center space-y-3">
+                <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When should we meet?</h1>
+                <p className="text-base sm:text-lg text-foreground/70">Choose preset times or create your own</p>
               </div>
 
               {/* Quick Presets */}
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Quick Presets</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Card>
+                <h2 className="text-lg sm:text-xl font-bold mb-4">Quick Presets</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <button
                     onClick={() => handlePresetSelect('this-weekend')}
-                    className={`p-4 rounded-lg border-2 transition-all ${
+                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 min-h-[80px] text-left touch-manipulation ${
                       presetType === 'this-weekend'
-                        ? 'border-foreground bg-foreground/5'
-                        : 'border-foreground/20 hover:border-foreground/40'
+                        ? 'border-foreground bg-foreground/10 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
                     }`}
                   >
-                    <div className="font-medium mb-1">This Weekend</div>
-                    <div className="text-sm text-foreground/60">Sat 10am, Sat 2pm, Sun 11am</div>
+                    <div className="font-bold mb-1.5 text-base">This Weekend</div>
+                    <div className="text-sm text-foreground/70 leading-relaxed">Sat 10am, Sat 2pm, Sun 11am</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('next-weekend')}
-                    className={`p-4 rounded-lg border-2 transition-all ${
+                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 min-h-[80px] text-left touch-manipulation ${
                       presetType === 'next-weekend'
-                        ? 'border-foreground bg-foreground/5'
-                        : 'border-foreground/20 hover:border-foreground/40'
+                        ? 'border-foreground bg-foreground/10 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
                     }`}
                   >
-                    <div className="font-medium mb-1">Next Weekend</div>
-                    <div className="text-sm text-foreground/60">Next Sat/Sun times</div>
+                    <div className="font-bold mb-1.5 text-base">Next Weekend</div>
+                    <div className="text-sm text-foreground/70 leading-relaxed">Next Sat/Sun times</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('weekday')}
-                    className={`p-4 rounded-lg border-2 transition-all ${
+                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 min-h-[80px] text-left touch-manipulation ${
                       presetType === 'weekday'
-                        ? 'border-foreground bg-foreground/5'
-                        : 'border-foreground/20 hover:border-foreground/40'
+                        ? 'border-foreground bg-foreground/10 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
                     }`}
                   >
-                    <div className="font-medium mb-1">Weekday Evenings</div>
-                    <div className="text-sm text-foreground/60">Mon, Wed, Thu 7pm</div>
+                    <div className="font-bold mb-1.5 text-base">Weekday Evenings</div>
+                    <div className="text-sm text-foreground/70 leading-relaxed">Mon, Wed, Thu 7pm</div>
                   </button>
                 </div>
               </Card>
 
               {/* Custom Times */}
-              <Card className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Custom Times</h2>
+              <Card>
+                <div className="flex justify-between items-center mb-4 sm:mb-5">
+                  <h2 className="text-lg sm:text-xl font-bold">Custom Times</h2>
                   <button
                     onClick={handleCustomToggle}
-                    className="text-sm text-foreground/60 hover:text-foreground"
+                    className="text-sm font-medium text-foreground/70 hover:text-foreground active:text-foreground transition-colors touch-manipulation min-h-[44px] px-3 rounded-lg hover:bg-foreground/10"
                   >
-                    {useCustom ? 'Using custom times' : 'Switch to custom'}
+                    {useCustom ? '✓ Using custom' : 'Switch to custom'}
                   </button>
                 </div>
 
                 {useCustom && (
-                  <div className="space-y-4">
+                  <div className="space-y-4 sm:space-y-5">
                     {customSlots.map((slot, index) => (
                       <div key={slot.id} className="flex gap-3 items-start">
-                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                           <Input
                             type="datetime-local"
                             value={slot.start_time}
@@ -274,9 +274,9 @@ export default function CreateEventPage() {
                             variant="tertiary"
                             size="sm"
                             onClick={() => removeCustomSlot(slot.id)}
-                            className="mt-8"
+                            className={index === 0 ? 'mt-8 sm:mt-9' : ''}
                           >
-                            Remove
+                            ✕
                           </Button>
                         )}
                       </div>
@@ -284,7 +284,7 @@ export default function CreateEventPage() {
 
                     {customSlots.length < 10 && (
                       <Button variant="secondary" onClick={addCustomSlot} className="w-full">
-                        Add Time Slot ({customSlots.length}/10)
+                        + Add Time Slot ({customSlots.length}/10)
                       </Button>
                     )}
                   </div>
@@ -294,14 +294,14 @@ export default function CreateEventPage() {
           )}
 
           {step === 'event-details' && (
-            <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <h1 className="text-3xl sm:text-4xl font-bold">Event Details</h1>
-                <p className="text-foreground/60">Tell everyone what you&apos;re planning</p>
+            <div className="space-y-6 sm:space-y-8">
+              <div className="text-center space-y-3">
+                <h1 className="text-3xl sm:text-4xl font-bold leading-tight">Event Details</h1>
+                <p className="text-base sm:text-lg text-foreground/70">Tell everyone what you&apos;re planning</p>
               </div>
 
-              <Card className="p-6">
-                <div className="space-y-6">
+              <Card>
+                <div className="space-y-6 sm:space-y-7">
                   <Input
                     label="Event Title"
                     placeholder="What are we doing?"
@@ -340,26 +340,26 @@ export default function CreateEventPage() {
       </div>
 
       {/* Fixed Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-foreground/10 sm:hidden z-50 safe-area-bottom">
-        <div className="px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
+        <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           {step === 'time-selection' ? (
-            <Button size="lg" onClick={handleNextStep} className="w-full min-h-[44px]">
-              Next: Event Details
+            <Button size="lg" onClick={handleNextStep} className="w-full min-h-[52px] shadow-lg">
+              Next: Event Details →
             </Button>
           ) : (
             <div className="flex gap-3">
               <Button 
                 variant="secondary" 
                 onClick={() => setStep('time-selection')}
-                className="flex-1 min-h-[44px]"
+                className="flex-1 min-h-[52px]"
               >
-                Back
+                ← Back
               </Button>
               <Button 
                 size="lg" 
                 onClick={handleCreateEvent} 
                 isLoading={isLoading}
-                className="flex-1 min-h-[44px]"
+                className="flex-[2] min-h-[52px] shadow-lg"
               >
                 Create Event
               </Button>
