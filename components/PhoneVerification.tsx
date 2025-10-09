@@ -151,32 +151,9 @@ export function PhoneVerification({ eventId, cookieId, onVerified, comingSoon = 
     );
   }
 
-  // Coming Soon UI - preserves all functionality but shows disabled state
+  // Hide component when not ready
   if (comingSoon) {
-    return (
-      <div className="relative">
-        {/* Blur overlay */}
-        <div className="absolute inset-0 bg-background/60 backdrop-blur-sm rounded-xl z-10 flex items-center justify-center">
-          <span className="px-4 py-2 bg-foreground/90 text-background text-sm font-bold rounded-full shadow-lg">
-            Coming Soon
-          </span>
-        </div>
-        
-        {/* Muted preview */}
-        <div className="opacity-40 pointer-events-none">
-          <button
-            className="flex items-center gap-3 w-full p-4 rounded-xl border-2 border-foreground/20 text-left"
-          >
-            <div className="flex-shrink-0 w-6 h-6 rounded border-2 border-foreground/40" />
-            <div className="flex-1">
-              <p className="text-sm sm:text-base font-medium">
-                Get notified by text when plan is locked in
-              </p>
-            </div>
-          </button>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
