@@ -12,122 +12,46 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-24 sm:pb-28">
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl w-full text-center space-y-10 sm:space-y-12 py-8 sm:py-12">
-          {/* Hero Section */}
-          <div className="space-y-5 sm:space-y-6">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-              Schedule plans with friends,{' '}
-              <span className="text-foreground/60">effortlessly</span>
-            </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed px-2">
-              No accounts, no hassle. Just create a poll, share the link, and find the perfect time
-              for everyone.
-            </p>
-          </div>
-
-          {/* Primary CTA */}
-          <div className="pt-2">
-            <Link href="/create">
-              <Button size="lg" className="text-base sm:text-lg px-10 sm:px-12">
-                Create an Event
-              </Button>
-            </Link>
-          </div>
-
-          {/* Feature Highlights */}
-          <div className="pt-8 sm:pt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-3xl mx-auto">
-            <div className="space-y-3 p-4 rounded-xl hover:bg-foreground/5 transition-colors">
-              <div className="flex justify-center">
-                <div className="w-12 h-12 rounded-xl bg-foreground/10 flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <h3 className="font-bold text-base sm:text-lg">Lightning Fast</h3>
-              <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
-                Create an event and share it in under 60 seconds
-              </p>
-            </div>
-
-            <div className="space-y-3 p-4 rounded-xl hover:bg-foreground/5 transition-colors">
-              <div className="flex justify-center">
-                <div className="w-12 h-12 rounded-xl bg-foreground/10 flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <h3 className="font-bold text-base sm:text-lg">No Login Required</h3>
-              <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
-                Anonymous and simple. No accounts or passwords needed
-              </p>
-            </div>
-
-            <div className="space-y-3 p-4 rounded-xl hover:bg-foreground/5 transition-colors">
-              <div className="flex justify-center">
-                <div className="w-12 h-12 rounded-xl bg-foreground/10 flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <h3 className="font-bold text-base sm:text-lg">Easy Sharing</h3>
-              <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
-                Share via text, social media, or any messaging app
-              </p>
+        <div className="w-full text-center space-y-8 sm:space-y-10">
+          {/* Calendar Icon */}
+          <div className="flex justify-center animate-in fade-in zoom-in duration-500">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-foreground/10 flex items-center justify-center shadow-lg">
+              <svg
+                className="w-12 h-12 sm:w-16 sm:h-16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+                />
+              </svg>
             </div>
           </div>
+
+          {/* Header */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight px-4 max-w-4xl mx-auto">
+            Schedule plans with friends
+          </h1>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="py-6 sm:py-8 px-4 border-t border-foreground/10">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-xs sm:text-sm text-foreground/60">
-          <p>&copy; {new Date().getFullYear()} Event Scheduler. All rights reserved.</p>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-foreground transition-colors touch-manipulation min-h-[44px] flex items-center">
-              Privacy
-            </Link>
-            <Link href="/terms" className="hover:text-foreground transition-colors touch-manipulation min-h-[44px] flex items-center">
-              Terms
-            </Link>
-          </div>
+      {/* Fixed Bottom CTA */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 z-50">
+        <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] max-w-2xl mx-auto">
+          <Link href="/create">
+            <Button size="lg" className="w-full min-h-[56px] text-base sm:text-lg shadow-lg">
+              Create an Event
+            </Button>
+          </Link>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }
