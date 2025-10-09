@@ -20,35 +20,54 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
-        <div className="w-full text-center space-y-6 sm:space-y-8">
-          {/* Calendar Icon with bounce animation */}
+        <div className="w-full text-center space-y-6 sm:space-y-8 max-w-4xl mx-auto">
+          {/* Tagline */}
+          <div className="animate-bounce-in">
+            <p className="text-sm sm:text-base font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-6">
+              Making Plans: Solved
+            </p>
+          </div>
+
+          {/* Clean Group of People Icon with bounce animation */}
           <div className="flex justify-center animate-bounce-in">
-            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-foreground/10 flex items-center justify-center shadow-lg">
-              <svg
-                className="w-12 h-12 sm:w-16 sm:h-16"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
-                />
-              </svg>
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-blue-600/10 dark:bg-blue-500/20 flex items-center justify-center shadow-lg">
+              {/* Simple, clean people icons */}
+              <div className="flex items-end gap-2 sm:gap-2.5">
+                {/* Person 1 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600 dark:bg-blue-500"></div>
+                  <div className="w-6 h-7 sm:w-7 sm:h-8 rounded-t-full bg-blue-600 dark:bg-blue-500 mt-1"></div>
+                </div>
+                
+                {/* Person 2 - center, slightly taller */}
+                <div className="flex flex-col items-center -mb-1">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 dark:bg-blue-500"></div>
+                  <div className="w-7 h-9 sm:w-8 sm:h-10 rounded-t-full bg-blue-600 dark:bg-blue-500 mt-1"></div>
+                </div>
+                
+                {/* Person 3 */}
+                <div className="flex flex-col items-center">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600 dark:bg-blue-500"></div>
+                  <div className="w-6 h-7 sm:w-7 sm:h-8 rounded-t-full bg-blue-600 dark:bg-blue-500 mt-1"></div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Header with subline */}
-          <div className="space-y-3 sm:space-y-4">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight px-4 max-w-4xl mx-auto">
-              Schedule plans with friends
+          {/* Main Headline */}
+          <div className="space-y-4 sm:space-y-5">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none">
+              IRL &gt; URL
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-foreground/70 max-w-md mx-auto px-4">
-              Find a time that works — no login needed.
+            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground/90 leading-tight px-4">
+              One link. Everyone votes. Plans locked.
             </p>
           </div>
+
+          {/* Supporting Text */}
+          <p className="text-base sm:text-lg lg:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed px-4">
+            Stop letting plans fall through while you doomscroll—actually see your friends.
+          </p>
         </div>
       </main>
 
@@ -56,13 +75,10 @@ export default function Home() {
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 z-50 shadow-2xl">
         <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] max-w-2xl mx-auto">
           <Link href="/create">
-            <Button size="lg" className="w-full min-h-[56px] text-base sm:text-lg shadow-lg">
+            <Button size="lg" className="w-full min-h-[56px] text-base sm:text-lg shadow-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white">
               Create an Event
             </Button>
           </Link>
-          <p className="text-center text-xs sm:text-sm text-foreground/60 mt-3 leading-relaxed">
-            Create a poll, share the link, let friends vote.
-          </p>
         </div>
       </div>
     </div>
