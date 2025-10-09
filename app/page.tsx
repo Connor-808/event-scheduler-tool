@@ -12,11 +12,20 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col pb-24 sm:pb-28 bg-gradient-to-b from-background via-background to-foreground/[0.02]">
-      {/* Subtle pattern overlay */}
-      <div className="fixed inset-0 opacity-[0.015] pointer-events-none" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+    <div className="min-h-screen flex flex-col pb-24 sm:pb-28 bg-gradient-to-b from-background via-background to-blue-50/30 dark:to-blue-950/10">
+      {/* Fun pattern overlay with more personality */}
+      <div className="fixed inset-0 pointer-events-none" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Ccircle cx='50' cy='30' r='3'/%3E%3Ccircle cx='90' cy='20' r='2'/%3E%3Ccircle cx='20' cy='70' r='2'/%3E%3Ccircle cx='70' cy='80' r='3'/%3E%3Ccircle cx='30' cy='50' r='2'/%3E%3Ccircle cx='80' cy='60' r='2'/%3E%3Cpath d='M15 15 L20 20 M55 35 L60 40 M75 25 L80 30' stroke='%238b5cf6' stroke-width='1' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E")`,
+        opacity: 0.4,
       }} />
+      
+      {/* Accent dots scattered around */}
+      <div className="fixed inset-0 pointer-events-none opacity-30">
+        <div className="absolute top-20 left-[10%] w-32 h-32 bg-blue-400/10 rounded-full blur-2xl"></div>
+        <div className="absolute top-40 right-[15%] w-40 h-40 bg-purple-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-32 left-[20%] w-36 h-36 bg-pink-400/10 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-48 right-[25%] w-28 h-28 bg-blue-400/10 rounded-full blur-2xl"></div>
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
