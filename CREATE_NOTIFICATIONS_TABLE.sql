@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS event_notifications (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   
   -- Constraints
-  UNIQUE(event_id, cookie_id), -- One notification record per user per event
-  FOREIGN KEY (cookie_id, event_id) REFERENCES user_cookies(cookie_id, event_id) ON DELETE CASCADE
+  UNIQUE(event_id, cookie_id) -- One notification record per user per event
+  -- Note: Foreign key to user_cookies (cookie_id, event_id) composite key
 );
 
 -- Indexes for performance
