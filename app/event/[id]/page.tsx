@@ -197,52 +197,126 @@ export default function EventVotingPage() {
 
   // Show locked state
   if (event?.status === 'locked' && event.locked_time) {
+    const shareUrl = typeof window !== 'undefined' 
+      ? `${window.location.origin}/event/${eventId}` 
+      : '';
+
+    const handleShare = async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: event?.title || 'Event',
+            text: `The time has been set! ${formatDateTime(event.locked_time!.start_time)}`,
+            url: shareUrl,
+          });
+        } catch (error) {
+          console.error('Error sharing:', error);
+        }
+      } else {
+        // Fallback to copy
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          alert('Link copied to clipboard!');
+        } catch (error) {
+          console.error('Failed to copy:', error);
+        }
+      }
+    };
+
     return (
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-8 animate-in fade-in zoom-in duration-300">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/20 mb-4">
-              <svg className="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+      <div className="min-h-screen pb-40 sm:pb-12">
+        <div className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-8 animate-in fade-in zoom-in duration-300">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/20 mb-4">
+                <svg className="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold mb-2">The time has been set!</h1>
+              <p className="text-lg text-foreground/60">See you there</p>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2">The time has been set!</h1>
-            <p className="text-lg text-foreground/60">See you there</p>
-          </div>
 
-          <Card className="mb-6 border-2 border-blue-600/50">
-            <CardHeader>
-              <CardTitle>{event.title}</CardTitle>
-              {event.location && <CardDescription>📍 {event.location}</CardDescription>}
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm font-medium text-foreground/60 mb-2">Final Time</p>
-                  <p className="text-2xl font-bold">{formatDateTime(event.locked_time.start_time)}</p>
-                  {event.locked_time.label && (
-                    <p className="text-foreground/60 mt-1">{event.locked_time.label}</p>
-                  )}
-                </div>
+            <Card className="mb-6 border-2 border-blue-600/50">
+              <CardHeader>
+                <CardTitle>{event.title}</CardTitle>
+                {event.location && <CardDescription>📍 {event.location}</CardDescription>}
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium text-foreground/60 mb-2">Final Time</p>
+                    <p className="text-2xl font-bold">{formatDateTime(event.locked_time.start_time)}</p>
+                    {event.locked_time.label && (
+                      <p className="text-foreground/60 mt-1">{event.locked_time.label}</p>
+                    )}
+                  </div>
 
-                <div className="pt-4 border-t border-foreground/10">
-                  <p className="text-sm font-medium text-foreground/60 mb-2">Who&apos;s Going</p>
-                  <div className="space-y-1">
-                    {event.participants
-                      .filter(p => p.display_name)
-                      .map(p => (
-                        <div key={p.cookie_id} className="text-sm">
-                          {p.display_name}
-                        </div>
-                      ))}
+                  <div className="pt-4 border-t border-foreground/10">
+                    <p className="text-sm font-medium text-foreground/60 mb-2">Who&apos;s Going</p>
+                    <div className="space-y-1">
+                      {event.participants
+                        .filter(p => p.display_name)
+                        .map(p => (
+                          <div key={p.cookie_id} className="text-sm">
+                            {p.display_name}
+                          </div>
+                        ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <div className="text-center text-sm text-foreground/60">
-            <p>Voting is now closed</p>
+            {/* Desktop Action Buttons - hidden on mobile */}
+            <div className="hidden sm:block space-y-3">
+              <Button onClick={handleShare} size="lg" className="w-full">
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                  />
+                </svg>
+                Share with Friends
+              </Button>
+
+              <Button variant="secondary" size="lg" onClick={() => router.push('/create')} className="w-full">
+                Create New Event
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Fixed Bottom CTA - Mobile Only */}
+        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
+          <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-3">
+            <Button onClick={handleShare} size="lg" className="w-full min-h-[52px] shadow-lg">
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                />
+              </svg>
+              Share with Friends
+            </Button>
+
+            <Button variant="secondary" size="lg" onClick={() => router.push('/create')} className="w-full min-h-[52px]">
+              Create New Event
+            </Button>
           </div>
         </div>
       </div>
