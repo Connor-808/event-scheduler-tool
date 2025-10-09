@@ -12,19 +12,44 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col pb-24 sm:pb-28 bg-gradient-to-b from-background via-background to-blue-50/30 dark:to-blue-950/10">
-      {/* Fun pattern overlay with more personality */}
-      <div className="fixed inset-0 pointer-events-none" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Ccircle cx='50' cy='30' r='3'/%3E%3Ccircle cx='90' cy='20' r='2'/%3E%3Ccircle cx='20' cy='70' r='2'/%3E%3Ccircle cx='70' cy='80' r='3'/%3E%3Ccircle cx='30' cy='50' r='2'/%3E%3Ccircle cx='80' cy='60' r='2'/%3E%3Cpath d='M15 15 L20 20 M55 35 L60 40 M75 25 L80 30' stroke='%238b5cf6' stroke-width='1' opacity='0.5'/%3E%3C/g%3E%3C/svg%3E")`,
-        opacity: 0.4,
-      }} />
+    <div className="min-h-screen flex flex-col pb-24 sm:pb-28 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/40 dark:from-gray-950 dark:via-blue-950/20 dark:to-purple-950/20">
+      {/* Strong halftone dot pattern for depth */}
+      <div 
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle, rgba(99, 102, 241, 0.4) 1px, transparent 1px),
+            radial-gradient(circle, rgba(139, 92, 246, 0.3) 1px, transparent 1px)
+          `,
+          backgroundSize: '20px 20px, 30px 30px',
+          backgroundPosition: '0 0, 15px 15px',
+          maskImage: 'radial-gradient(ellipse 80% 60% at 60% 40%, black 0%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 60% 40%, black 0%, transparent 100%)',
+        }}
+      />
       
-      {/* Accent dots scattered around */}
-      <div className="fixed inset-0 pointer-events-none opacity-30">
-        <div className="absolute top-20 left-[10%] w-32 h-32 bg-blue-400/10 rounded-full blur-2xl"></div>
-        <div className="absolute top-40 right-[15%] w-40 h-40 bg-purple-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-32 left-[20%] w-36 h-36 bg-pink-400/10 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-48 right-[25%] w-28 h-28 bg-blue-400/10 rounded-full blur-2xl"></div>
+      {/* Gradient halftone effect for depth */}
+      <div 
+        className="fixed inset-0 pointer-events-none opacity-70 dark:opacity-50"
+        style={{
+          background: `
+            radial-gradient(circle at 20% 30%, transparent 0%, rgba(0,0,0,0.03) 50%),
+            radial-gradient(1.5px 1.5px at 10% 20%, rgba(99, 102, 241, 0.15), transparent),
+            radial-gradient(2px 2px at 40% 50%, rgba(139, 92, 246, 0.12), transparent),
+            radial-gradient(1px 1px at 60% 30%, rgba(99, 102, 241, 0.1), transparent),
+            radial-gradient(2.5px 2.5px at 80% 60%, rgba(236, 72, 153, 0.1), transparent),
+            radial-gradient(1.5px 1.5px at 30% 70%, rgba(139, 92, 246, 0.12), transparent)
+          `,
+          backgroundSize: '100% 100%, 50px 50px, 80px 80px, 40px 40px, 70px 70px, 60px 60px',
+          backgroundPosition: '0 0, 0 0, 40px 60px, 130px 270px, 70px 100px, 150px 220px',
+        }}
+      />
+      
+      {/* Soft gradient orbs for atmosphere */}
+      <div className="fixed inset-0 pointer-events-none opacity-40">
+        <div className="absolute top-10 left-[5%] w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 right-[10%] w-80 h-80 bg-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-[15%] w-72 h-72 bg-pink-400/15 rounded-full blur-3xl"></div>
       </div>
 
       {/* Main Content */}
