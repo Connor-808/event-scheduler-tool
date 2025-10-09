@@ -28,27 +28,30 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Clean Group of People Icon with bounce animation */}
+          {/* Fun Group of People Icon with bounce animation */}
           <div className="flex justify-center animate-bounce-in">
-            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-blue-600/10 dark:bg-blue-500/20 flex items-center justify-center shadow-lg">
-              {/* Simple, clean people icons */}
-              <div className="flex items-end gap-2 sm:gap-2.5">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center shadow-lg relative overflow-hidden">
+              {/* Playful sparkle effect */}
+              <div className="absolute top-2 right-2 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+              
+              {/* Simple, fun people icons */}
+              <div className="flex items-end gap-1.5 sm:gap-2">
                 {/* Person 1 */}
                 <div className="flex flex-col items-center">
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600 dark:bg-blue-500"></div>
-                  <div className="w-6 h-7 sm:w-7 sm:h-8 rounded-t-full bg-blue-600 dark:bg-blue-500 mt-1"></div>
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-500"></div>
+                  <div className="w-7 h-8 sm:w-8 sm:h-10 rounded-t-full bg-blue-500 mt-1"></div>
                 </div>
                 
-                {/* Person 2 - center, slightly taller */}
-                <div className="flex flex-col items-center -mb-1">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-blue-600 dark:bg-blue-500"></div>
-                  <div className="w-7 h-9 sm:w-8 sm:h-10 rounded-t-full bg-blue-600 dark:bg-blue-500 mt-1"></div>
+                {/* Person 2 - slightly taller */}
+                <div className="flex flex-col items-center mb-1">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-purple-500"></div>
+                  <div className="w-8 h-10 sm:w-9 sm:h-12 rounded-t-full bg-purple-500 mt-1"></div>
                 </div>
                 
                 {/* Person 3 */}
                 <div className="flex flex-col items-center">
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-blue-600 dark:bg-blue-500"></div>
-                  <div className="w-6 h-7 sm:w-7 sm:h-8 rounded-t-full bg-blue-600 dark:bg-blue-500 mt-1"></div>
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-pink-500"></div>
+                  <div className="w-7 h-8 sm:w-8 sm:h-10 rounded-t-full bg-pink-500 mt-1"></div>
                 </div>
               </div>
             </div>
