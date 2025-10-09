@@ -30,11 +30,7 @@ export default function CreateEventPage() {
 
   // Time Selection State
   const [presetType, setPresetType] = useState<'this-weekend' | 'next-weekend' | 'weekday' | null>(null);
-  const [customSlots, setCustomSlots] = useState<TimeSlotInput[]>([
-    { id: '1', start_time: '', label: '' },
-    { id: '2', start_time: '', label: '' },
-  ]);
-  const [useCustom, setUseCustom] = useState(false);
+  const [timeSlots, setTimeSlots] = useState<TimeSlotInput[]>([]);
 
   // Event Details State
   const [title, setTitle] = useState('');
@@ -44,67 +40,56 @@ export default function CreateEventPage() {
 
   const handlePresetSelect = (type: 'this-weekend' | 'next-weekend' | 'weekday') => {
     setPresetType(type);
-    setUseCustom(false);
-  };
-
-  const handleCustomToggle = () => {
-    setUseCustom(true);
-    setPresetType(null);
-  };
-
-  // Get formatted times for the selected preset
-  const getPresetTimes = (type: 'this-weekend' | 'next-weekend' | 'weekday') => {
+    
+    // Get preset times and convert to TimeSlotInput format
     const presetMap = {
       'this-weekend': getThisWeekendTimes,
       'next-weekend': getNextWeekendTimes,
       'weekday': getWeekdayEveningTimes,
     };
-    const times = presetMap[type]();
-    return times.map(slot => ({
-      formatted: new Date(slot.start_time).toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-      }),
+    const presetTimes = presetMap[type]();
+    
+    // Convert to datetime-local format for inputs
+    const slots: TimeSlotInput[] = presetTimes.map((slot, index) => ({
+      id: `preset-${index}-${Date.now()}`,
+      start_time: new Date(slot.start_time).toISOString().slice(0, 16), // datetime-local format
       label: slot.label,
     }));
+    
+    setTimeSlots(slots);
   };
 
   const addCustomSlot = () => {
-    if (customSlots.length < 10) {
-      setCustomSlots([
-        ...customSlots,
+    if (timeSlots.length < 10) {
+      setTimeSlots([
+        ...timeSlots,
         { id: Date.now().toString(), start_time: '', label: '' },
       ]);
+      // Clear preset selection when adding custom slots
+      setPresetType(null);
     }
   };
 
-  const removeCustomSlot = (id: string) => {
-    if (customSlots.length > 2) {
-      setCustomSlots(customSlots.filter((slot) => slot.id !== id));
+  const removeTimeSlot = (id: string) => {
+    setTimeSlots(timeSlots.filter((slot) => slot.id !== id));
+    // If we remove all slots, clear the preset selection
+    if (timeSlots.length === 1) {
+      setPresetType(null);
     }
   };
 
-  const updateCustomSlot = (id: string, field: 'start_time' | 'label', value: string) => {
-    setCustomSlots(
-      customSlots.map((slot) => (slot.id === id ? { ...slot, [field]: value } : slot))
+  const updateTimeSlot = (id: string, field: 'start_time' | 'label', value: string) => {
+    setTimeSlots(
+      timeSlots.map((slot) => (slot.id === id ? { ...slot, [field]: value } : slot))
     );
   };
 
   const validateTimeSelection = (): boolean => {
-    if (!useCustom && !presetType) {
-      alert('Please select a preset or create custom time slots');
+    const filledSlots = timeSlots.filter((slot) => slot.start_time);
+    
+    if (filledSlots.length < 2) {
+      alert('Please select a preset or add at least 2 time slots');
       return false;
-    }
-
-    if (useCustom) {
-      const filledSlots = customSlots.filter((slot) => slot.start_time);
-      if (filledSlots.length < 2) {
-        alert('Please add at least 2 time slots');
-        return false;
-      }
     }
 
     return true;
@@ -143,26 +128,13 @@ export default function CreateEventPage() {
     setIsLoading(true);
 
     try {
-      // Prepare time slots
-      let timeSlots: { start_time: Date; label: string }[];
-
-      if (presetType) {
-        // Use preset times
-        const presetMap = {
-          'this-weekend': getThisWeekendTimes,
-          'next-weekend': getNextWeekendTimes,
-          weekday: getWeekdayEveningTimes,
-        };
-        timeSlots = presetMap[presetType]();
-      } else {
-        // Use custom times
-        timeSlots = customSlots
-          .filter((slot) => slot.start_time)
-          .map((slot) => ({
-            start_time: new Date(slot.start_time),
-            label: slot.label || '',
-          }));
-      }
+      // Prepare time slots - filter out empty ones and convert to proper format
+      const timeSlotsForSubmission = timeSlots
+        .filter((slot) => slot.start_time)
+        .map((slot) => ({
+          start_time: new Date(slot.start_time),
+          label: slot.label || '',
+        }));
 
       const cookieId = getUserCookieId();
 
@@ -174,7 +146,7 @@ export default function CreateEventPage() {
           title,
           location: location || null,
           notes: notes || null,
-          timeSlots,
+          timeSlots: timeSlotsForSubmission,
           cookieId,
         }),
       });
@@ -213,7 +185,7 @@ export default function CreateEventPage() {
             <div className="space-y-6 sm:space-y-8">
               <div className="text-center space-y-3">
                 <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When should we meet?</h1>
-                <p className="text-base sm:text-lg text-foreground/70">Choose preset times or create your own</p>
+                <p className="text-base sm:text-lg text-foreground/70">Choose a preset or add custom times</p>
               </div>
 
               {/* Quick Presets */}
@@ -256,79 +228,48 @@ export default function CreateEventPage() {
                     <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Mon, Wed, Thu</div>
                   </button>
                 </div>
-
-                {/* Show selected preset times */}
-                {presetType && !useCustom && (
-                  <div className="mt-5 pt-5 border-t border-foreground/10">
-                    <p className="text-sm font-semibold text-foreground/70 mb-3">
-                      Selected Times:
-                    </p>
-                    <div className="space-y-2">
-                      {getPresetTimes(presetType).map((time, index) => (
-                        <div 
-                          key={index}
-                          className="p-3 rounded-lg bg-foreground/5 border border-foreground/10"
-                        >
-                          <div className="font-medium text-sm">{time.formatted}</div>
-                          {time.label && (
-                            <div className="text-xs text-foreground/60 mt-0.5">{time.label}</div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </Card>
 
-              {/* Custom Times */}
+              {/* Unified Time Slots Display */}
               <Card>
-                <div className="flex justify-between items-center mb-4 sm:mb-5">
-                  <h2 className="text-lg sm:text-xl font-bold">Custom Times</h2>
-                  <button
-                    onClick={handleCustomToggle}
-                    className="text-sm font-medium text-foreground/70 hover:text-foreground active:text-foreground transition-colors touch-manipulation min-h-[44px] px-3 rounded-lg hover:bg-foreground/10"
-                  >
-                    {useCustom ? '✓ Using custom' : 'Switch to custom'}
-                  </button>
+                <div className="mb-4 sm:mb-5">
+                  <h2 className="text-lg sm:text-xl font-bold">Time Slots ({timeSlots.length}/10)</h2>
                 </div>
 
-                {useCustom && (
-                  <div className="space-y-4 sm:space-y-5">
-                    {customSlots.map((slot, index) => (
-                      <div key={slot.id} className="flex gap-3 items-start">
-                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                {timeSlots.length === 0 ? (
+                  <div className="text-center py-8 sm:py-12 text-foreground/60">
+                    <p className="text-base font-medium mb-2">No time slots yet</p>
+                    <p className="text-sm">Select a preset above or add a custom time slot</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 sm:space-y-4">
+                    {timeSlots.map((slot, index) => (
+                      <div key={slot.id} className="flex gap-3 items-start p-3 sm:p-4 rounded-lg border border-foreground/10 bg-foreground/5">
+                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <Input
                             type="datetime-local"
                             value={slot.start_time}
-                            onChange={(e) => updateCustomSlot(slot.id, 'start_time', e.target.value)}
+                            onChange={(e) => updateTimeSlot(slot.id, 'start_time', e.target.value)}
                             label={index === 0 ? 'Date & Time' : undefined}
                           />
                           <Input
                             type="text"
                             value={slot.label}
-                            onChange={(e) => updateCustomSlot(slot.id, 'label', e.target.value)}
+                            onChange={(e) => updateTimeSlot(slot.id, 'label', e.target.value)}
                             placeholder="Label (optional)"
                             label={index === 0 ? 'Label' : undefined}
                           />
                         </div>
-                        {customSlots.length > 2 && (
-                          <Button
-                            variant="tertiary"
-                            size="sm"
-                            onClick={() => removeCustomSlot(slot.id)}
-                            className={index === 0 ? 'mt-8 sm:mt-9' : ''}
-                          >
-                            ✕
-                          </Button>
-                        )}
+                        <Button
+                          variant="tertiary"
+                          size="sm"
+                          onClick={() => removeTimeSlot(slot.id)}
+                          className={index === 0 ? 'mt-8 sm:mt-9' : ''}
+                        >
+                          ✕
+                        </Button>
                       </div>
                     ))}
-
-                    {customSlots.length < 10 && (
-                      <Button variant="secondary" onClick={addCustomSlot} className="w-full">
-                        + Add Time Slot ({customSlots.length}/10)
-                      </Button>
-                    )}
                   </div>
                 )}
               </Card>
@@ -383,11 +324,25 @@ export default function CreateEventPage() {
 
       {/* Fixed Bottom CTA */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
-        <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           {step === 'time-selection' ? (
-            <Button size="lg" onClick={handleNextStep} className="w-full min-h-[52px] shadow-lg">
-              Next: Event Details →
-            </Button>
+            <div className="space-y-3">
+              {/* Add Time Slot button - always show if under limit */}
+              {timeSlots.length < 10 && (
+                <Button 
+                  variant="secondary" 
+                  onClick={addCustomSlot} 
+                  className="w-full min-h-[52px]"
+                >
+                  + Add Time Slot ({timeSlots.length}/10)
+                </Button>
+              )}
+              
+              {/* Main CTA */}
+              <Button size="lg" onClick={handleNextStep} className="w-full min-h-[52px] shadow-lg">
+                Next: Event Details →
+              </Button>
+            </div>
           ) : (
             <div className="flex gap-3">
               <Button 
