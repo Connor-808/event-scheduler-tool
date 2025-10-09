@@ -7,6 +7,12 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 // Create Supabase client for client-side usage
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Create Supabase admin client for server-side API routes (bypasses RLS)
+// This should only be used in API routes, never on the client
+export const supabaseAdmin = typeof window === 'undefined'
+  ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+  : supabase; // Fallback to regular client if somehow called on client-side
+
 // TypeScript Types based on SCHEMA.md
 
 /**

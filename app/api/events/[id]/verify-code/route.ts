@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(
   request: NextRequest,
@@ -40,7 +40,7 @@ export async function POST(
     }
 
     // Query event_notifications for matching record
-    const { data: notification, error: notificationError } = await supabase
+    const { data: notification, error: notificationError } = await supabaseAdmin
       .from('event_notifications')
       .select('*')
       .eq('event_id', eventId)
@@ -68,7 +68,7 @@ export async function POST(
     }
 
     // Update record: set verified = true, clear verification_code
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from('event_notifications')
       .update({
         verified: true,

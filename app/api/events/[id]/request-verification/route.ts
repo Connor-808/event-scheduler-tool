@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import twilio from 'twilio';
 
 export async function POST(
@@ -55,8 +55,8 @@ export async function POST(
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
-    // Upsert into event_notifications table
-    const { error: dbError } = await supabase
+    // Upsert into event_notifications table (using admin client for write access)
+    const { error: dbError } = await supabaseAdmin
       .from('event_notifications')
       .upsert(
         {

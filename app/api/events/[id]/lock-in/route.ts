@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseAdmin } from '@/lib/supabase';
 import twilio from 'twilio';
 
 export async function POST(
@@ -34,7 +34,7 @@ export async function POST(
     }
 
     // Query all verified phone numbers for this event
-    const { data: notifications, error: notificationsError } = await supabase
+    const { data: notifications, error: notificationsError } = await supabaseAdmin
       .from('event_notifications')
       .select('phone_number')
       .eq('event_id', eventId)
