@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { PhoneVerification } from '@/components/PhoneVerification';
 import { getEventWithDetails, EventWithDetails, Vote, supabase } from '@/lib/supabase';
 import { getUserCookieId, formatDateTime } from '@/lib/utils';
 
@@ -342,6 +343,14 @@ export default function EventVotingPage() {
               maxLength={50}
             />
           </Card>
+
+          {/* Phone Verification Widget */}
+          <div className="mb-6">
+            <PhoneVerification 
+              eventId={eventId} 
+              cookieId={cookieId}
+            />
+          </div>
 
           {/* Desktop Submit Button - hidden on mobile */}
           <div className="hidden sm:block">

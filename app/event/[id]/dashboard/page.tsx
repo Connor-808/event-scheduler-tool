@@ -106,12 +106,13 @@ export default function DashboardPage() {
   };
 
   const handleLockConfirm = async () => {
-    if (!selectedSlot) return;
+    if (!selectedSlot || !event) return;
 
     setIsLocking(true);
 
     try {
-      const response = await fetch(`/api/events/${eventId}/lock`, {
+      // First, lock the time in the database
+      const lockResponse = await fetch(`/api/events/${eventId}/lock`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -120,9 +121,25 @@ export default function DashboardPage() {
         }),
       });
 
-      if (!response.ok) {
+      if (!lockResponse.ok) {
         throw new Error('Failed to lock time');
       }
+
+      // Send SMS notifications to verified participants
+      const finalOption = event.title;
+      const finalTime = formatDateTime(selectedSlot.start_time);
+
+      await fetch(`/api/events/${eventId}/lock-in`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          finalOption,
+          finalTime,
+        }),
+      }).catch(err => {
+        // Log error but don't fail the lock-in
+        console.error('Error sending notifications:', err);
+      });
 
       // Redirect to event page (now shows locked state)
       router.push(`/event/${eventId}`);
@@ -336,7 +353,7 @@ export default function DashboardPage() {
           isOpen={lockModalOpen}
           onClose={() => setLockModalOpen(false)}
           title="Lock in this time?"
-          description="This will finalize your event and notify all participants"
+          description="This will finalize your event and send text notifications to verified participants"
         >
           {selectedSlot && (
             <div className="space-y-5">
@@ -360,7 +377,7 @@ export default function DashboardPage() {
               </div>
 
               <p className="text-sm sm:text-base text-foreground/70 leading-relaxed">
-                Once locked, participants will see the final confirmed time.
+                Once locked, participants will see the final confirmed time and those who verified their phone will receive a text notification.
               </p>
 
               <ModalFooter>
