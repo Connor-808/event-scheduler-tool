@@ -60,15 +60,15 @@ export async function POST(
       .from('event_notifications')
       .upsert(
         {
-          event_id: eventId,
           cookie_id: cookieId,
+          event_id: eventId,
           phone_number: formattedPhone,
           verified: false,
           verification_code: verificationCode,
           code_expires_at: expiresAt.toISOString(),
         },
         {
-          onConflict: 'event_id,cookie_id',
+          onConflict: 'cookie_id,event_id',
         }
       );
 

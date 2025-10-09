@@ -75,7 +75,8 @@ export async function POST(
         verification_code: null,
         code_expires_at: null,
       })
-      .eq('id', notification.id);
+      .eq('event_id', eventId)
+      .eq('cookie_id', cookieId);
 
     if (updateError) {
       console.error('Error updating verification status:', updateError);

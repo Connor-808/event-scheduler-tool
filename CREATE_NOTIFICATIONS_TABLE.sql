@@ -2,12 +2,9 @@
 -- Run this SQL in your Supabase SQL Editor
 
 CREATE TABLE IF NOT EXISTS event_notifications (
-  -- Primary identifier
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  
-  -- Relationships
-  event_id TEXT NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
+  -- Composite primary key (same pattern as user_cookies)
   cookie_id UUID NOT NULL,
+  event_id TEXT NOT NULL REFERENCES events(event_id) ON DELETE CASCADE,
   
   -- Phone verification
   phone_number TEXT NOT NULL, -- E.164 format: +15551234567
@@ -19,9 +16,11 @@ CREATE TABLE IF NOT EXISTS event_notifications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   
-  -- Constraints
-  UNIQUE(event_id, cookie_id) -- One notification record per user per event
-  -- Note: Foreign key to user_cookies (cookie_id, event_id) composite key
+  -- Composite primary key
+  PRIMARY KEY (cookie_id, event_id),
+  
+  -- Foreign key to user_cookies
+  FOREIGN KEY (cookie_id, event_id) REFERENCES user_cookies(cookie_id, event_id) ON DELETE CASCADE
 );
 
 -- Indexes for performance
