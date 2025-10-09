@@ -52,6 +52,26 @@ export default function CreateEventPage() {
     setPresetType(null);
   };
 
+  // Get formatted times for the selected preset
+  const getPresetTimes = (type: 'this-weekend' | 'next-weekend' | 'weekday') => {
+    const presetMap = {
+      'this-weekend': getThisWeekendTimes,
+      'next-weekend': getNextWeekendTimes,
+      'weekday': getWeekdayEveningTimes,
+    };
+    const times = presetMap[type]();
+    return times.map(slot => ({
+      formatted: new Date(slot.start_time).toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      }),
+      label: slot.label,
+    }));
+  };
+
   const addCustomSlot = () => {
     if (customSlots.length < 10) {
       setCustomSlots([
@@ -202,40 +222,62 @@ export default function CreateEventPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <button
                     onClick={() => handlePresetSelect('this-weekend')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 min-h-[80px] text-left touch-manipulation ${
+                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
                       presetType === 'this-weekend'
                         ? 'border-foreground bg-foreground/10 shadow-sm'
                         : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
                     }`}
                   >
                     <div className="font-bold mb-1.5 text-base">This Weekend</div>
-                    <div className="text-sm text-foreground/70 leading-relaxed">Sat 10am, Sat 2pm, Sun 11am</div>
+                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Sat & Sun mornings</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('next-weekend')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 min-h-[80px] text-left touch-manipulation ${
+                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
                       presetType === 'next-weekend'
                         ? 'border-foreground bg-foreground/10 shadow-sm'
                         : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
                     }`}
                   >
                     <div className="font-bold mb-1.5 text-base">Next Weekend</div>
-                    <div className="text-sm text-foreground/70 leading-relaxed">Next Sat/Sun times</div>
+                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Next Sat & Sun</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('weekday')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 min-h-[80px] text-left touch-manipulation ${
+                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
                       presetType === 'weekday'
                         ? 'border-foreground bg-foreground/10 shadow-sm'
                         : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
                     }`}
                   >
                     <div className="font-bold mb-1.5 text-base">Weekday Evenings</div>
-                    <div className="text-sm text-foreground/70 leading-relaxed">Mon, Wed, Thu 7pm</div>
+                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Mon, Wed, Thu</div>
                   </button>
                 </div>
+
+                {/* Show selected preset times */}
+                {presetType && !useCustom && (
+                  <div className="mt-5 pt-5 border-t border-foreground/10">
+                    <p className="text-sm font-semibold text-foreground/70 mb-3">
+                      Selected Times:
+                    </p>
+                    <div className="space-y-2">
+                      {getPresetTimes(presetType).map((time, index) => (
+                        <div 
+                          key={index}
+                          className="p-3 rounded-lg bg-foreground/5 border border-foreground/10"
+                        >
+                          <div className="font-medium text-sm">{time.formatted}</div>
+                          {time.label && (
+                            <div className="text-xs text-foreground/60 mt-0.5">{time.label}</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </Card>
 
               {/* Custom Times */}
