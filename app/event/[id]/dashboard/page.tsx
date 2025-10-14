@@ -167,6 +167,17 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
+        {/* Hero Image */}
+        {event?.hero_image_url && (
+          <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
+            <img 
+              src={event.hero_image_url} 
+              alt={event.title} 
+              className="w-full h-48 sm:h-64 object-cover"
+            />
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8 sm:mb-10">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-5">

@@ -145,6 +145,17 @@ export default function EventVotingPage() {
     return (
       <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
+          {/* Hero Image */}
+          {event?.hero_image_url && (
+            <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
+              <img 
+                src={event.hero_image_url} 
+                alt={event.title} 
+                className="w-full h-48 sm:h-64 object-cover"
+              />
+            </div>
+          )}
+
           <div className="text-center mb-8 sm:mb-10 animate-in fade-in zoom-in duration-300">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/20 mb-4 shadow-lg">
               <svg className="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,6 +238,17 @@ export default function EventVotingPage() {
       <div className="min-h-screen pb-40 sm:pb-12">
         <div className="py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto">
+            {/* Hero Image */}
+            {event.hero_image_url && (
+              <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
+                <img 
+                  src={event.hero_image_url} 
+                  alt={event.title} 
+                  className="w-full h-64 sm:h-80 object-cover"
+                />
+              </div>
+            )}
+
             <div className="text-center mb-8 animate-in fade-in zoom-in duration-300">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/20 mb-4">
                 <svg className="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -349,6 +371,17 @@ export default function EventVotingPage() {
     <div className="min-h-screen pb-32 sm:pb-12">
       <div className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
+          {/* Hero Image */}
+          {event?.hero_image_url && (
+            <div className="mb-6 sm:mb-8 rounded-xl overflow-hidden shadow-lg">
+              <img 
+                src={event.hero_image_url} 
+                alt={event.title} 
+                className="w-full h-48 sm:h-64 object-cover"
+              />
+            </div>
+          )}
+
           {/* Event Header */}
           <Card className="mb-6 sm:mb-8">
             <CardHeader>

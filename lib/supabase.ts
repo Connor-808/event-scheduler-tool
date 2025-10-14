@@ -23,6 +23,8 @@ export interface Event {
   title: string; // Event name/description
   location: string | null; // Optional place name or address
   location_details: Record<string, unknown> | null; // Additional location metadata (JSON)
+  notes: string | null; // Optional additional notes
+  hero_image_url: string | null; // Optional hero/banner image URL
   locked_time_id: string | null; // Foreign key to TimeSlot when locked
   status: 'active' | 'locked' | 'cancelled'; // Event status
   created_at: string; // ISO timestamp

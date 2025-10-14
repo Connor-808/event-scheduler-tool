@@ -63,12 +63,16 @@ const LocationPicker = forwardRef<HTMLInputElement, LocationPickerProps>(
             clearTimeout(searchTimeoutRef.current);
           }
 
-          // Debounce search by 500ms
+          // Show searching state immediately
+          setIsSearching(true);
+
+          // Debounce search by 300ms (faster response)
           searchTimeoutRef.current = setTimeout(() => {
             searchPlaces(value);
-          }, 500);
+          }, 300);
         } else {
           setPlaceResults([]);
+          setIsSearching(false);
         }
       } else {
         setFilteredSuggestions(LOCATION_SUGGESTIONS);
@@ -170,9 +174,19 @@ const LocationPicker = forwardRef<HTMLInputElement, LocationPickerProps>(
           </div>
           
           {/* Dropdown */}
-          {isOpen && (placeResults.length > 0 || filteredSuggestions.length > 0) && (
+          {isOpen && (placeResults.length > 0 || filteredSuggestions.length > 0 || isSearching) && (
             <div className="absolute z-50 w-full mt-2 bg-background border-2 border-foreground/20 rounded-lg shadow-lg max-h-96 overflow-y-auto">
               <div className="p-2">
+                {/* Searching State */}
+                {isSearching && placeResults.length === 0 && value.length >= 3 && (
+                  <div className="mb-2">
+                    <div className="flex items-center gap-2 px-2 py-3">
+                      <div className="w-4 h-4 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
+                      <p className="text-sm text-foreground/60">Searching places...</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Real Places Section */}
                 {placeResults.length > 0 && (
                   <div className="mb-2">
@@ -180,9 +194,6 @@ const LocationPicker = forwardRef<HTMLInputElement, LocationPickerProps>(
                       <p className="text-xs font-semibold text-foreground/60 uppercase tracking-wide">
                         Places
                       </p>
-                      {isSearching && (
-                        <div className="w-3 h-3 border-2 border-foreground/20 border-t-foreground rounded-full animate-spin" />
-                      )}
                     </div>
                     <div className="space-y-1">
                       {placeResults.map((place, index) => (
