@@ -42,11 +42,37 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await image.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    // Determine content type - handle HEIC/HEIF files from iPhone
+    let contentType = image.type;
+    if (!contentType || contentType === 'application/octet-stream') {
+      const ext = image.name.toLowerCase().split('.').pop();
+      if (ext === 'heic' || ext === 'heif') {
+        contentType = 'image/heic';
+      } else if (ext === 'jpg' || ext === 'jpeg') {
+        contentType = 'image/jpeg';
+      } else if (ext === 'png') {
+        contentType = 'image/png';
+      } else if (ext === 'gif') {
+        contentType = 'image/gif';
+      } else if (ext === 'webp') {
+        contentType = 'image/webp';
+      } else {
+        contentType = 'image/jpeg'; // fallback
+      }
+    }
+
+    console.log('Uploading file:', {
+      name: image.name,
+      originalType: image.type,
+      finalContentType: contentType,
+      size: image.size,
+    });
+
     // Upload to Supabase Storage
     const { data, error } = await supabaseAdmin.storage
       .from('event-images')
       .upload(filePath, buffer, {
-        contentType: image.type,
+        contentType,
         upsert: false,
       });
 
