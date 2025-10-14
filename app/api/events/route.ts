@@ -5,7 +5,7 @@ import { generateEventId } from '@/lib/utils';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, location, timeSlots, cookieId } = body;
+    const { title, location, notes, heroImageUrl, timeSlots, cookieId } = body;
 
     // Validate required fields
     if (!title || !timeSlots || !cookieId) {
@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
       event_id: eventId,
       title,
       location: location || null,
+      notes: notes || null,
+      hero_image_url: heroImageUrl || null,
       status: 'active',
       ttl: ttl.toISOString(),
     });

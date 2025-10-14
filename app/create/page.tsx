@@ -41,6 +41,8 @@ export default function CreateEventPage() {
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [notes, setNotes] = useState('');
+  const [heroImage, setHeroImage] = useState<File | null>(null);
+  const [heroImagePreview, setHeroImagePreview] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handlePresetSelect = (type: 'this-weekend' | 'next-weekend' | 'weekday' | 'weekend-warrior' | 'coffee-catchup' | 'lazy-sunday' | 'unemployed-friend' | 'chill-evenings') => {
@@ -94,6 +96,56 @@ export default function CreateEventPage() {
     );
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type (including HEIC/HEIF for iPhone)
+      const validTypes = [
+        'image/jpeg',
+        'image/jpg', 
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/heic',
+        'image/heif'
+      ];
+      
+      const isValidType = file.type.startsWith('image/') || 
+                         file.name.toLowerCase().endsWith('.heic') ||
+                         file.name.toLowerCase().endsWith('.heif');
+      
+      if (!isValidType) {
+        setErrors({ ...errors, image: 'Please select an image file' });
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors({ ...errors, image: 'Image must be less than 5MB' });
+        return;
+      }
+
+      setHeroImage(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHeroImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      
+      // Clear any previous errors
+      const newErrors = { ...errors };
+      delete newErrors.image;
+      setErrors(newErrors);
+    }
+  };
+
+  const removeImage = () => {
+    setHeroImage(null);
+    setHeroImagePreview('');
+  };
+
   const validateTimeSelection = (): boolean => {
     const filledSlots = timeSlots.filter((slot) => slot.start_time);
     
@@ -138,6 +190,27 @@ export default function CreateEventPage() {
     setIsLoading(true);
 
     try {
+      let heroImageUrl = null;
+
+      // Upload image if present
+      if (heroImage) {
+        const formData = new FormData();
+        formData.append('image', heroImage);
+
+        const uploadResponse = await fetch('/api/upload-image', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          heroImageUrl = uploadData.url;
+        } else {
+          console.error('Failed to upload image');
+          // Continue without image - it's optional
+        }
+      }
+
       // Prepare time slots - filter out empty ones and convert to proper format
       const timeSlotsForSubmission = timeSlots
         .filter((slot) => slot.start_time)
@@ -156,6 +229,7 @@ export default function CreateEventPage() {
           title,
           location: location || null,
           notes: notes || null,
+          heroImageUrl,
           timeSlots: timeSlotsForSubmission,
           cookieId,
         }),
@@ -400,6 +474,54 @@ export default function CreateEventPage() {
 
               <Card>
                 <div className="space-y-6 sm:space-y-7">
+                  {/* Hero Image Upload */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-3 text-foreground">
+                      Event Image <span className="text-foreground/60 font-normal">(Optional)</span>
+                    </label>
+                    
+                    {!heroImagePreview ? (
+                      <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-foreground/20 rounded-lg cursor-pointer hover:border-foreground/40 hover:bg-foreground/5 transition-all">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <svg className="w-10 h-10 mb-3 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <p className="mb-2 text-sm text-foreground/70">
+                            <span className="font-semibold">Click to upload</span> or drag and drop
+                          </p>
+                          <p className="text-xs text-foreground/60">PNG, JPG, HEIC, GIF up to 5MB</p>
+                        </div>
+                        <input 
+                          type="file" 
+                          className="hidden" 
+                          accept="image/*,.heic,.heif"
+                          onChange={handleImageUpload}
+                        />
+                      </label>
+                    ) : (
+                      <div className="relative">
+                        <img 
+                          src={heroImagePreview} 
+                          alt="Event preview" 
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                        <button
+                          onClick={removeImage}
+                          className="absolute top-2 right-2 p-2 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-colors"
+                          aria-label="Remove image"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                    
+                    {errors.image && (
+                      <p className="mt-2 text-sm font-medium text-red-600">{errors.image}</p>
+                    )}
+                  </div>
+
                   <Input
                     label="Event Title"
                     placeholder="What are we doing?"
