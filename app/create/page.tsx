@@ -205,10 +205,10 @@ export default function CreateEventPage() {
                   {/* Popular presets */}
                   <button
                     onClick={() => handlePresetSelect('weekend-warrior')}
-                    className={`relative flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                    className={`relative flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
                       presetType === 'weekend-warrior'
-                        ? 'border-foreground bg-foreground/5 shadow-sm'
-                        : 'border-foreground/30 bg-foreground/5 hover:border-foreground/50 hover:bg-foreground/10'
+                        ? 'border-foreground shadow-sm'
+                        : 'border-foreground/30 hover:border-foreground/50 hover:shadow-sm'
                     }`}
                   >
                     <div className="absolute -top-2 -right-2 bg-foreground text-background text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
@@ -220,10 +220,10 @@ export default function CreateEventPage() {
 
                   <button
                     onClick={() => handlePresetSelect('chill-evenings')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
                       presetType === 'chill-evenings'
-                        ? 'border-foreground bg-foreground/5 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                        ? 'border-foreground shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Chill Evenings</div>
@@ -232,10 +232,10 @@ export default function CreateEventPage() {
 
                   <button
                     onClick={() => handlePresetSelect('this-weekend')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
                       presetType === 'this-weekend'
-                        ? 'border-foreground bg-foreground/5 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                        ? 'border-foreground shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">This Weekend</div>
@@ -244,10 +244,10 @@ export default function CreateEventPage() {
 
                   <button
                     onClick={() => handlePresetSelect('next-weekend')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
                       presetType === 'next-weekend'
-                        ? 'border-foreground bg-foreground/5 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                        ? 'border-foreground shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Next Weekend</div>
@@ -256,10 +256,10 @@ export default function CreateEventPage() {
 
                   <button
                     onClick={() => handlePresetSelect('coffee-catchup')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
                       presetType === 'coffee-catchup'
-                        ? 'border-foreground bg-foreground/5 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                        ? 'border-foreground shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Coffee & Catchup</div>
@@ -268,10 +268,10 @@ export default function CreateEventPage() {
 
                   <button
                     onClick={() => handlePresetSelect('lazy-sunday')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
                       presetType === 'lazy-sunday'
-                        ? 'border-foreground bg-foreground/5 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                        ? 'border-foreground shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Lazy Sunday</div>
@@ -280,10 +280,10 @@ export default function CreateEventPage() {
 
                   <button
                     onClick={() => handlePresetSelect('unemployed-friend')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
                       presetType === 'unemployed-friend'
-                        ? 'border-foreground bg-foreground/5 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                        ? 'border-foreground shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Unemployed Friend</div>
@@ -292,10 +292,10 @@ export default function CreateEventPage() {
 
                   <button
                     onClick={() => handlePresetSelect('weekday')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
                       presetType === 'weekday'
-                        ? 'border-foreground bg-foreground/5 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                        ? 'border-foreground shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Weekday Evenings</div>
@@ -331,7 +331,7 @@ export default function CreateEventPage() {
                           <div className="flex-1 min-w-0 space-y-2">
                             {/* Date/Time input with calendar icon */}
                             <div className="relative">
-                              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none z-10">
+                              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none z-10">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -340,13 +340,13 @@ export default function CreateEventPage() {
                                 type="datetime-local"
                                 value={slot.start_time}
                                 onChange={(e) => updateTimeSlot(slot.id, 'start_time', e.target.value)}
-                                className="flex min-h-[48px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-10 pr-4 py-3 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                                className="flex h-[48px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-11 pr-4 py-2.5 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                               />
                             </div>
                             
                             {/* Label input with text icon */}
                             <div className="relative">
-                              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+                              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                                 </svg>
@@ -356,7 +356,7 @@ export default function CreateEventPage() {
                                 value={slot.label}
                                 onChange={(e) => updateTimeSlot(slot.id, 'label', e.target.value)}
                                 placeholder="Add a label (optional)"
-                                className="flex min-h-[48px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-10 pr-4 py-3 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200"
+                                className="flex h-[48px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-11 pr-4 py-2.5 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200"
                               />
                             </div>
                           </div>
