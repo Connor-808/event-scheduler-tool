@@ -475,6 +475,27 @@ export default function CreateEventPage() {
 
               <Card>
                 <div className="space-y-6 sm:space-y-7">
+                  <Input
+                    label="Event Title"
+                    placeholder="What are we doing?"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    error={errors.title}
+                    required
+                    maxLength={100}
+                    helperText={`${title.length}/100 characters`}
+                  />
+
+                  <LocationPicker
+                    label="Location"
+                    placeholder="Where should we meet?"
+                    value={location}
+                    onChange={(value) => setLocation(value)}
+                    error={errors.location}
+                    maxLength={200}
+                    helperText="Optional"
+                  />
+
                   {/* Hero Image Upload */}
                   <div>
                     <label className="block text-sm font-semibold mb-3 text-foreground">
@@ -522,27 +543,6 @@ export default function CreateEventPage() {
                       <p className="mt-2 text-sm font-medium text-red-600">{errors.image}</p>
                     )}
                   </div>
-
-                  <Input
-                    label="Event Title"
-                    placeholder="What are we doing?"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    error={errors.title}
-                    required
-                    maxLength={100}
-                    helperText={`${title.length}/100 characters`}
-                  />
-
-                  <LocationPicker
-                    label="Location"
-                    placeholder="Where should we meet?"
-                    value={location}
-                    onChange={(value) => setLocation(value)}
-                    error={errors.location}
-                    maxLength={200}
-                    helperText="Optional"
-                  />
 
                   <Textarea
                     label="Additional Notes"
