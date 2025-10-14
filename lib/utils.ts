@@ -298,18 +298,24 @@ export function getNextWeekendTimes(): TimeSlotPreset[] {
 
 /**
  * Generate time slots for "Weekday Evenings"
- * Returns 3-5 slots: Mon 7pm, Wed 7pm, Thu 7pm (this week or next)
+ * Returns 5 slots: Mon-Fri 7pm
  */
 export function getWeekdayEveningTimes(): TimeSlotPreset[] {
   const now = new Date();
   const monday = getNextDayOfWeek(now, 1); // Monday is 1
+  const tuesday = getNextDayOfWeek(now, 2); // Tuesday is 2
   const wednesday = getNextDayOfWeek(now, 3); // Wednesday is 3
   const thursday = getNextDayOfWeek(now, 4); // Thursday is 4
+  const friday = getNextDayOfWeek(now, 5); // Friday is 5
 
   return [
     {
       start_time: setTime(monday, 19, 0), // 7 PM
       label: 'Monday Evening',
+    },
+    {
+      start_time: setTime(tuesday, 19, 0),
+      label: 'Tuesday Evening',
     },
     {
       start_time: setTime(wednesday, 19, 0),
@@ -318,6 +324,143 @@ export function getWeekdayEveningTimes(): TimeSlotPreset[] {
     {
       start_time: setTime(thursday, 19, 0),
       label: 'Thursday Evening',
+    },
+    {
+      start_time: setTime(friday, 19, 0),
+      label: 'Friday Evening',
+    },
+  ];
+}
+
+/**
+ * Generate time slots for "Weekend Warrior"
+ * Returns 2 slots: Friday 8pm, Saturday 8pm
+ */
+export function getWeekendWarriorTimes(): TimeSlotPreset[] {
+  const now = new Date();
+  const friday = getNextDayOfWeek(now, 5); // Friday is 5
+  const saturday = getNextDayOfWeek(now, 6); // Saturday is 6
+
+  return [
+    {
+      start_time: setTime(friday, 20, 0), // 8 PM
+      label: 'Friday Night',
+    },
+    {
+      start_time: setTime(saturday, 20, 0), // 8 PM
+      label: 'Saturday Night',
+    },
+  ];
+}
+
+/**
+ * Generate time slots for "Coffee & Catchup"
+ * Returns 5 slots: Mon-Fri 10am
+ */
+export function getCoffeeCatchupTimes(): TimeSlotPreset[] {
+  const now = new Date();
+  const monday = getNextDayOfWeek(now, 1); // Monday is 1
+  const tuesday = getNextDayOfWeek(now, 2); // Tuesday is 2
+  const wednesday = getNextDayOfWeek(now, 3); // Wednesday is 3
+  const thursday = getNextDayOfWeek(now, 4); // Thursday is 4
+  const friday = getNextDayOfWeek(now, 5); // Friday is 5
+
+  return [
+    {
+      start_time: setTime(monday, 10, 0), // 10 AM
+      label: 'Monday Morning',
+    },
+    {
+      start_time: setTime(tuesday, 10, 0),
+      label: 'Tuesday Morning',
+    },
+    {
+      start_time: setTime(wednesday, 10, 0),
+      label: 'Wednesday Morning',
+    },
+    {
+      start_time: setTime(thursday, 10, 0),
+      label: 'Thursday Morning',
+    },
+    {
+      start_time: setTime(friday, 10, 0),
+      label: 'Friday Morning',
+    },
+  ];
+}
+
+/**
+ * Generate time slots for "Lazy Sunday"
+ * Returns 3 slots: Sunday brunch/afternoon times
+ */
+export function getLazySundayTimes(): TimeSlotPreset[] {
+  const now = new Date();
+  const sunday = getNextDayOfWeek(now, 0); // Sunday is 0
+
+  return [
+    {
+      start_time: setTime(sunday, 11, 0), // 11 AM
+      label: 'Late Brunch',
+    },
+    {
+      start_time: setTime(sunday, 14, 0), // 2 PM
+      label: 'Afternoon Hangout',
+    },
+    {
+      start_time: setTime(sunday, 17, 0), // 5 PM
+      label: 'Early Evening',
+    },
+  ];
+}
+
+/**
+ * Generate time slots for "The Unemployed Friend"
+ * Returns 3 slots: Weekday midday times
+ */
+export function getUnemployedFriendTimes(): TimeSlotPreset[] {
+  const now = new Date();
+  const monday = getNextDayOfWeek(now, 1); // Monday is 1
+  const wednesday = getNextDayOfWeek(now, 3); // Wednesday is 3
+  const friday = getNextDayOfWeek(now, 5); // Friday is 5
+
+  return [
+    {
+      start_time: setTime(monday, 13, 0), // 1 PM
+      label: 'Monday Lunch',
+    },
+    {
+      start_time: setTime(wednesday, 13, 0),
+      label: 'Wednesday Lunch',
+    },
+    {
+      start_time: setTime(friday, 14, 0), // 2 PM
+      label: 'Friday Afternoon',
+    },
+  ];
+}
+
+/**
+ * Generate time slots for "Chill Evenings"
+ * Returns 3 slots: Tue 7pm, Wed 7pm, Thu 7pm
+ */
+export function getChillEveningsTimes(): TimeSlotPreset[] {
+  const now = new Date();
+  const tuesday = getNextDayOfWeek(now, 2); // Tuesday is 2
+  const wednesday = getNextDayOfWeek(now, 3); // Wednesday is 3
+  const thursday = getNextDayOfWeek(now, 4); // Thursday is 4
+
+  return [
+    {
+      start_time: setTime(tuesday, 19, 0), // 7 PM
+      label: 'Tuesday Night',
+    },
+    {
+      start_time: setTime(wednesday, 19, 0),
+      label: 'Wednesday Night',
+    },
+    {
+      start_time: setTime(thursday, 19, 0),
+      label: 'Thursday Night',
     },
   ];
 }

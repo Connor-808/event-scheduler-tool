@@ -10,6 +10,11 @@ import {
   getThisWeekendTimes,
   getNextWeekendTimes,
   getWeekdayEveningTimes,
+  getWeekendWarriorTimes,
+  getCoffeeCatchupTimes,
+  getLazySundayTimes,
+  getUnemployedFriendTimes,
+  getChillEveningsTimes,
   validateEventTitle,
   validateLocation,
   getUserCookieId,
@@ -29,7 +34,7 @@ export default function CreateEventPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Time Selection State
-  const [presetType, setPresetType] = useState<'this-weekend' | 'next-weekend' | 'weekday' | null>(null);
+  const [presetType, setPresetType] = useState<'this-weekend' | 'next-weekend' | 'weekday' | 'weekend-warrior' | 'coffee-catchup' | 'lazy-sunday' | 'unemployed-friend' | 'chill-evenings' | null>(null);
   const [timeSlots, setTimeSlots] = useState<TimeSlotInput[]>([]);
 
   // Event Details State
@@ -38,7 +43,7 @@ export default function CreateEventPage() {
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handlePresetSelect = (type: 'this-weekend' | 'next-weekend' | 'weekday') => {
+  const handlePresetSelect = (type: 'this-weekend' | 'next-weekend' | 'weekday' | 'weekend-warrior' | 'coffee-catchup' | 'lazy-sunday' | 'unemployed-friend' | 'chill-evenings') => {
     setPresetType(type);
     
     // Get preset times and convert to TimeSlotInput format
@@ -46,6 +51,11 @@ export default function CreateEventPage() {
       'this-weekend': getThisWeekendTimes,
       'next-weekend': getNextWeekendTimes,
       'weekday': getWeekdayEveningTimes,
+      'weekend-warrior': getWeekendWarriorTimes,
+      'coffee-catchup': getCoffeeCatchupTimes,
+      'lazy-sunday': getLazySundayTimes,
+      'unemployed-friend': getUnemployedFriendTimes,
+      'chill-evenings': getChillEveningsTimes,
     };
     const presetTimes = presetMap[type]();
     
@@ -185,94 +195,199 @@ export default function CreateEventPage() {
             <div className="space-y-6 sm:space-y-8">
               <div className="text-center space-y-3">
                 <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When should we meet?</h1>
-                <p className="text-base sm:text-lg text-foreground/70">Choose a preset or add custom times</p>
+                <p className="text-base sm:text-lg text-foreground/70">Select times for friends to vote on</p>
               </div>
 
-              {/* Quick Presets */}
-              <Card>
-                <h2 className="text-lg sm:text-xl font-bold mb-4">Quick Presets</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              {/* Quick Presets - Compact horizontal layout */}
+              <div className="space-y-3">
+                <h2 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide">Quick Start</h2>
+                <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+                  {/* Popular presets */}
                   <button
-                    onClick={() => handlePresetSelect('this-weekend')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
-                      presetType === 'this-weekend'
-                        ? 'border-foreground bg-foreground/10 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
+                    onClick={() => handlePresetSelect('weekend-warrior')}
+                    className={`relative flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                      presetType === 'weekend-warrior'
+                        ? 'border-foreground bg-foreground/5 shadow-sm'
+                        : 'border-foreground/30 bg-foreground/5 hover:border-foreground/50 hover:bg-foreground/10'
                     }`}
                   >
-                    <div className="font-bold mb-1.5 text-base">This Weekend</div>
-                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Sat & Sun mornings</div>
+                    <div className="absolute -top-2 -right-2 bg-foreground text-background text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
+                      Popular
+                    </div>
+                    <div className="text-sm font-bold mb-0.5">Weekend Warrior</div>
+                    <div className="text-xs text-foreground/60">Fri & Sat 8pm</div>
+                  </button>
+
+                  <button
+                    onClick={() => handlePresetSelect('chill-evenings')}
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                      presetType === 'chill-evenings'
+                        ? 'border-foreground bg-foreground/5 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                    }`}
+                  >
+                    <div className="text-sm font-bold mb-0.5">Chill Evenings</div>
+                    <div className="text-xs text-foreground/60">Tue, Wed, Thu</div>
+                  </button>
+
+                  <button
+                    onClick={() => handlePresetSelect('this-weekend')}
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                      presetType === 'this-weekend'
+                        ? 'border-foreground bg-foreground/5 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                    }`}
+                  >
+                    <div className="text-sm font-bold mb-0.5">This Weekend</div>
+                    <div className="text-xs text-foreground/60">Sat & Sun</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('next-weekend')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'next-weekend'
-                        ? 'border-foreground bg-foreground/10 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
+                        ? 'border-foreground bg-foreground/5 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
                     }`}
                   >
-                    <div className="font-bold mb-1.5 text-base">Next Weekend</div>
-                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Next Sat & Sun</div>
+                    <div className="text-sm font-bold mb-0.5">Next Weekend</div>
+                    <div className="text-xs text-foreground/60">Next Sat & Sun</div>
+                  </button>
+
+                  <button
+                    onClick={() => handlePresetSelect('coffee-catchup')}
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                      presetType === 'coffee-catchup'
+                        ? 'border-foreground bg-foreground/5 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                    }`}
+                  >
+                    <div className="text-sm font-bold mb-0.5">Coffee & Catchup</div>
+                    <div className="text-xs text-foreground/60">Weekday mornings</div>
+                  </button>
+
+                  <button
+                    onClick={() => handlePresetSelect('lazy-sunday')}
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                      presetType === 'lazy-sunday'
+                        ? 'border-foreground bg-foreground/5 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                    }`}
+                  >
+                    <div className="text-sm font-bold mb-0.5">Lazy Sunday</div>
+                    <div className="text-xs text-foreground/60">Brunch & chill</div>
+                  </button>
+
+                  <button
+                    onClick={() => handlePresetSelect('unemployed-friend')}
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
+                      presetType === 'unemployed-friend'
+                        ? 'border-foreground bg-foreground/5 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
+                    }`}
+                  >
+                    <div className="text-sm font-bold mb-0.5">Unemployed Friend</div>
+                    <div className="text-xs text-foreground/60">Weekday midday</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('weekday')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'weekday'
-                        ? 'border-foreground bg-foreground/10 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
+                        ? 'border-foreground bg-foreground/5 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5'
                     }`}
                   >
-                    <div className="font-bold mb-1.5 text-base">Weekday Evenings</div>
-                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Mon, Wed, Thu</div>
+                    <div className="text-sm font-bold mb-0.5">Weekday Evenings</div>
+                    <div className="text-xs text-foreground/60">Mon-Fri 7pm</div>
                   </button>
                 </div>
-              </Card>
+              </div>
 
-              {/* Unified Time Slots Display */}
-              <Card>
-                <div className="mb-4 sm:mb-5">
-                  <h2 className="text-lg sm:text-xl font-bold">Time Slots ({timeSlots.length}/10)</h2>
+              {/* Time Slots Display */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide">Your Schedule</h2>
+                  <span className="text-sm text-foreground/60">{timeSlots.length}/10 slots</span>
                 </div>
 
                 {timeSlots.length === 0 ? (
-                  <div className="text-center py-8 sm:py-12 text-foreground/60">
-                    <p className="text-base font-medium mb-2">No time slots yet</p>
-                    <p className="text-sm">Select a preset above or add a custom time slot</p>
-                  </div>
+                  <Card className="border-dashed">
+                    <div className="text-center py-10 text-foreground/60">
+                      <div className="w-12 h-12 rounded-full bg-foreground/5 flex items-center justify-center mx-auto mb-3">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <p className="font-medium mb-1">No time slots yet</p>
+                      <p className="text-sm">Choose a quick start option or add a custom slot below</p>
+                    </div>
+                  </Card>
                 ) : (
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-2">
                     {timeSlots.map((slot, index) => (
-                      <div key={slot.id} className="flex gap-3 items-start p-3 sm:p-4 rounded-lg border border-foreground/10 bg-foreground/5">
-                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <Input
-                            type="datetime-local"
-                            value={slot.start_time}
-                            onChange={(e) => updateTimeSlot(slot.id, 'start_time', e.target.value)}
-                            label={index === 0 ? 'Date & Time' : undefined}
-                          />
-                          <Input
-                            type="text"
-                            value={slot.label}
-                            onChange={(e) => updateTimeSlot(slot.id, 'label', e.target.value)}
-                            placeholder="Label (optional)"
-                            label={index === 0 ? 'Label' : undefined}
-                          />
+                      <div key={slot.id} className="group relative">
+                        <div className="flex gap-2 items-start p-3 rounded-lg border border-foreground/10 bg-background hover:border-foreground/20 transition-all">
+                          <div className="flex-1 min-w-0 space-y-2">
+                            {/* Date/Time input with calendar icon */}
+                            <div className="relative">
+                              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none z-10">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                              <input
+                                type="datetime-local"
+                                value={slot.start_time}
+                                onChange={(e) => updateTimeSlot(slot.id, 'start_time', e.target.value)}
+                                className="flex min-h-[48px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-10 pr-4 py-3 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                              />
+                            </div>
+                            
+                            {/* Label input with text icon */}
+                            <div className="relative">
+                              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                </svg>
+                              </div>
+                              <input
+                                type="text"
+                                value={slot.label}
+                                onChange={(e) => updateTimeSlot(slot.id, 'label', e.target.value)}
+                                placeholder="Add a label (optional)"
+                                className="flex min-h-[48px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-10 pr-4 py-3 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => removeTimeSlot(slot.id)}
+                            className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center text-foreground/40 hover:text-foreground hover:bg-foreground/5 transition-all"
+                            aria-label="Remove time slot"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
                         </div>
-                        <Button
-                          variant="tertiary"
-                          size="sm"
-                          onClick={() => removeTimeSlot(slot.id)}
-                          className={index === 0 ? 'mt-8 sm:mt-9' : ''}
-                        >
-                          ✕
-                        </Button>
                       </div>
                     ))}
+                    
+                    {/* Add slot button - desktop only, mobile has fixed bottom button */}
+                    {timeSlots.length < 10 && (
+                      <button
+                        onClick={addCustomSlot}
+                        className="hidden sm:flex w-full items-center justify-center gap-2 p-3 rounded-lg border-2 border-dashed border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground hover:bg-foreground/5 transition-all"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span className="text-sm font-medium">Add another time slot</span>
+                      </button>
+                    )}
                   </div>
                 )}
-              </Card>
+              </div>
             </div>
           )}
 
