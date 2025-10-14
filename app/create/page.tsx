@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import { LocationPicker } from '@/components/ui/location-picker';
 import {
   getThisWeekendTimes,
   getNextWeekendTimes,
@@ -533,11 +534,11 @@ export default function CreateEventPage() {
                     helperText={`${title.length}/100 characters`}
                   />
 
-                  <Input
+                  <LocationPicker
                     label="Location"
                     placeholder="Where should we meet?"
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    onChange={(value) => setLocation(value)}
                     error={errors.location}
                     maxLength={200}
                     helperText="Optional"
