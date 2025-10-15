@@ -456,6 +456,7 @@ export default function EventVotingPage() {
             <PhoneVerification 
               eventId={eventId} 
               cookieId={cookieId}
+              comingSoon={false}
             />
           </div>
 

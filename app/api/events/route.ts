@@ -5,7 +5,7 @@ import { generateEventId } from '@/lib/utils';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, location, notes, heroImageUrl, timeSlots, cookieId } = body;
+    const { title, location, notes, heroImageUrl, timeSlots, cookieId, organizerUserId } = body;
 
     // Validate required fields
     if (!title || !timeSlots || !cookieId) {
@@ -41,13 +41,14 @@ export async function POST(request: NextRequest) {
     const ttl = new Date();
     ttl.setDate(ttl.getDate() + 90);
 
-    // Create event
+    // Create event (with optional organizer user ID for authenticated users)
     const { error: eventError } = await supabase.from('events').insert({
       event_id: eventId,
       title,
       location: location || null,
       notes: notes || null,
       hero_image_url: heroImageUrl || null,
+      organizer_user_id: organizerUserId || null,
       status: 'active',
       ttl: ttl.toISOString(),
     });

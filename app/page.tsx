@@ -13,6 +13,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col pb-24 sm:pb-28">
+      {/* Header */}
+      <header className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="text-xl sm:text-2xl font-bold">MUUVS</div>
+          <Link href="/dashboard">
+            <Button size="sm" variant="secondary">
+              My Events
+            </Button>
+          </Link>
+        </div>
+      </header>
+
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
         <div className="w-full text-center space-y-6 sm:space-y-8 max-w-4xl mx-auto">

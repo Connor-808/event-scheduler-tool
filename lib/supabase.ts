@@ -25,6 +25,7 @@ export interface Event {
   location_details: Record<string, unknown> | null; // Additional location metadata (JSON)
   notes: string | null; // Optional additional notes
   hero_image_url: string | null; // Optional hero/banner image URL
+  organizer_user_id: string | null; // Foreign key to auth.users for authenticated organizers
   locked_time_id: string | null; // Foreign key to TimeSlot when locked
   status: 'active' | 'locked' | 'cancelled'; // Event status
   created_at: string; // ISO timestamp

@@ -73,6 +73,9 @@ CREATE TABLE events (
   location TEXT,
   location_details JSONB, -- Store structured location data (lat/lng, place_id, etc.)
   
+  -- Organizer information
+  organizer_user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL, -- For authenticated organizers
+  
   -- Event state
   locked_time_id UUID REFERENCES time_slots(timeslot_id), -- Selected final time
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'locked', 'cancelled')),
@@ -86,17 +89,20 @@ CREATE TABLE events (
 CREATE INDEX idx_events_status ON events(status);
 CREATE INDEX idx_events_created_at ON events(created_at);
 CREATE INDEX idx_events_ttl ON events(ttl) WHERE ttl IS NOT NULL;
+CREATE INDEX idx_events_organizer ON events(organizer_user_id) WHERE organizer_user_id IS NOT NULL;
 ```
 
 **Field Notes**:
 - `event_id`: Generated using unique-names-generator (e.g., "brave-blue-elephant")
 - `location_details`: JSON structure for future integration with maps/weather
+- `organizer_user_id`: Links to Supabase auth.users for authenticated organizers (NULL for anonymous)
 - `locked_time_id`: NULL until organizer locks in a time
 - `status`: Enum constraint ensures data integrity
 - `ttl`: Optional expiration date for automatic event cleanup (e.g., 90 days after creation)
 
-**Example Record**:
+**Example Records**:
 ```json
+// Authenticated organizer event
 {
   "event_id": "brave-blue-elephant",
   "title": "Weekend Brunch Plans",
@@ -105,10 +111,24 @@ CREATE INDEX idx_events_ttl ON events(ttl) WHERE ttl IS NOT NULL;
     "place_id": "ChIJ...",
     "formatted_address": "123 Main St, City, State"
   },
+  "organizer_user_id": "550e8400-e29b-41d4-a716-446655440099",
   "locked_time_id": null,
   "status": "active",
   "created_at": "2025-10-08T14:30:00Z",
   "ttl": "2026-01-08T14:30:00Z"
+}
+
+// Anonymous organizer event (backward compatible)
+{
+  "event_id": "happy-red-panda",
+  "title": "Movie Night",
+  "location": null,
+  "location_details": null,
+  "organizer_user_id": null,
+  "locked_time_id": null,
+  "status": "active",
+  "created_at": "2025-10-08T15:00:00Z",
+  "ttl": "2026-01-08T15:00:00Z"
 }
 ```
 
