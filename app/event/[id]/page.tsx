@@ -185,14 +185,17 @@ export default function EventVotingPage() {
     return (
       <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
-          {/* Hero Image */}
-          {event?.hero_image_url && (
+          {/* Hero Image or Gradient Placeholder */}
+          {event?.hero_image_url ? (
             <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
               <img 
                 src={event.hero_image_url} 
                 alt={event.title} 
                 className="w-full h-48 sm:h-64 object-cover"
               />
+            </div>
+          ) : (
+            <div className="mb-8 rounded-xl overflow-hidden shadow-lg h-48 sm:h-64 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-60">
             </div>
           )}
 
@@ -309,14 +312,17 @@ export default function EventVotingPage() {
       <div className="min-h-screen pb-40 sm:pb-12">
         <div className="py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto">
-            {/* Hero Image */}
-            {event.hero_image_url && (
+            {/* Hero Image or Gradient Placeholder */}
+            {event.hero_image_url ? (
               <div className="mb-8 rounded-xl overflow-hidden shadow-lg">
                 <img 
                   src={event.hero_image_url} 
                   alt={event.title} 
                   className="w-full h-64 sm:h-80 object-cover"
                 />
+              </div>
+            ) : (
+              <div className="mb-8 rounded-xl overflow-hidden shadow-lg h-64 sm:h-80 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-60">
               </div>
             )}
 
@@ -439,17 +445,20 @@ export default function EventVotingPage() {
   }
 
   return (
-    <div className="min-h-screen pb-32 sm:pb-12">
+    <div className={`min-h-screen ${event && event.time_slots.length === 1 ? 'pb-40' : 'pb-32'} sm:pb-12`}>
       <div className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
-          {/* Hero Image */}
-          {event?.hero_image_url && (
+          {/* Hero Image or Gradient Placeholder */}
+          {event?.hero_image_url ? (
             <div className="mb-6 sm:mb-8 rounded-xl overflow-hidden shadow-lg">
               <img 
                 src={event.hero_image_url} 
                 alt={event.title} 
                 className="w-full h-48 sm:h-64 object-cover"
               />
+            </div>
+          ) : (
+            <div className="mb-6 sm:mb-8 rounded-xl overflow-hidden shadow-lg h-48 sm:h-64 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-60">
             </div>
           )}
 
@@ -488,61 +497,6 @@ export default function EventVotingPage() {
                 <p className="text-base text-foreground/70">
                   {hasVoted ? 'You can change your response anytime' : 'Let the organizer know if you can attend'}
                 </p>
-              </div>
-
-              {/* RSVP Buttons */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <button
-                  onClick={() => handleRSVP(true)}
-                  disabled={isSubmitting}
-                  className={`p-6 sm:p-8 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-3 min-h-[140px] ${
-                    hasVoted && votes[event.time_slots[0].timeslot_id]
-                      ? 'border-green-600 bg-green-600/10 shadow-lg scale-105'
-                      : 'border-foreground/20 hover:border-green-600/50 hover:bg-green-600/5 active:scale-95'
-                  }`}
-                >
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center ${
-                    hasVoted && votes[event.time_slots[0].timeslot_id]
-                      ? 'bg-green-600'
-                      : 'bg-green-600/20'
-                  }`}>
-                    <svg className={`w-8 h-8 sm:w-10 sm:h-10 ${
-                      hasVoted && votes[event.time_slots[0].timeslot_id] ? 'text-white' : 'text-green-600'
-                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-bold text-lg sm:text-xl text-green-600">I&apos;m in</div>
-                    <div className="text-sm text-foreground/60 mt-1">I can attend</div>
-                  </div>
-                </button>
-
-                <button
-                  onClick={() => handleRSVP(false)}
-                  disabled={isSubmitting}
-                  className={`p-6 sm:p-8 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-3 min-h-[140px] ${
-                    hasVoted && !votes[event.time_slots[0].timeslot_id]
-                      ? 'border-red-600 bg-red-600/10 shadow-lg scale-105'
-                      : 'border-foreground/20 hover:border-red-600/50 hover:bg-red-600/5 active:scale-95'
-                  }`}
-                >
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center ${
-                    hasVoted && !votes[event.time_slots[0].timeslot_id]
-                      ? 'bg-red-600'
-                      : 'bg-red-600/20'
-                  }`}>
-                    <svg className={`w-8 h-8 sm:w-10 sm:h-10 ${
-                      hasVoted && !votes[event.time_slots[0].timeslot_id] ? 'text-white' : 'text-red-600'
-                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-bold text-lg sm:text-xl text-red-600">Can&apos;t make it</div>
-                    <div className="text-sm text-foreground/60 mt-1">I can&apos;t attend</div>
-                  </div>
-                </button>
               </div>
             </>
           ) : (
@@ -660,7 +614,7 @@ export default function EventVotingPage() {
         </div>
       </div>
 
-      {/* Fixed Bottom CTA - Mobile Only, hide for single time slot events */}
+      {/* Fixed Bottom CTA - Multi Time Slot Voting */}
       {event && event.time_slots.length > 1 && (
         <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
           <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
@@ -673,6 +627,45 @@ export default function EventVotingPage() {
               {hasVoted ? 'Update My Availability' : 'Submit My Availability'}
               {selectedCount > 0 && ` (${selectedCount})`}
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Fixed Bottom RSVP Buttons - Single Time Slot */}
+      {event && event.time_slots.length === 1 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 z-50">
+          <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+            <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto">
+              <button
+                onClick={() => handleRSVP(true)}
+                disabled={isSubmitting}
+                className={`min-h-[52px] rounded-xl border-2 transition-all duration-200 flex items-center justify-center gap-2 font-semibold ${
+                  hasVoted && votes[event.time_slots[0].timeslot_id]
+                    ? 'border-green-600 bg-green-600 text-white shadow-lg'
+                    : 'border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/20 active:bg-green-600/30'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>I&apos;m in</span>
+              </button>
+
+              <button
+                onClick={() => handleRSVP(false)}
+                disabled={isSubmitting}
+                className={`min-h-[52px] rounded-xl border-2 transition-all duration-200 flex items-center justify-center gap-2 font-semibold ${
+                  hasVoted && !votes[event.time_slots[0].timeslot_id]
+                    ? 'border-red-600 bg-red-600 text-white shadow-lg'
+                    : 'border-red-600/50 bg-red-600/10 text-red-600 hover:bg-red-600/20 active:bg-red-600/30'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span>Can&apos;t make it</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
