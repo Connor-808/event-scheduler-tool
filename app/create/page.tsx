@@ -35,7 +35,7 @@ export default function CreateEventPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Event Type State
-  const [eventType, setEventType] = useState<'poll' | 'fixed'>('poll');
+  const [eventType, setEventType] = useState<'poll' | 'fixed'>('fixed');
 
   // Time Selection State
   const [presetType, setPresetType] = useState<'this-weekend' | 'next-weekend' | 'weekday' | 'weekend-warrior' | 'coffee-catchup' | 'lazy-sunday' | 'unemployed-friend' | 'chill-evenings' | null>(null);
@@ -241,11 +241,11 @@ export default function CreateEventPage() {
             label: 'Event Time',
           }]
         : timeSlots
-            .filter((slot) => slot.start_time)
-            .map((slot) => ({
-              start_time: new Date(slot.start_time),
-              label: slot.label || '',
-            }));
+        .filter((slot) => slot.start_time)
+        .map((slot) => ({
+          start_time: new Date(slot.start_time),
+          label: slot.label || '',
+        }));
 
       const cookieId = getUserCookieId();
 
@@ -390,67 +390,95 @@ export default function CreateEventPage() {
               <div className="text-center space-y-3">
                 <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When should we meet?</h1>
                 <p className="text-base sm:text-lg text-foreground/70">
-                  {eventType === 'poll' ? 'Select times for friends to vote on' : 'Set the fixed time for your event'}
+                  {eventType === 'poll' ? 'Select times for friends to vote on' : 'Set a time for your event'}
                 </p>
               </div>
 
-              {/* Event Type Selector */}
-              <div className="max-w-md mx-auto">
-                <div className="flex gap-2 p-1 bg-foreground/5 rounded-xl">
+              {/* Fixed Time Picker - Default */}
+              {eventType === 'fixed' && (
+                <>
+                  <Card>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-3 text-foreground">
+                          Event Date & Time
+                        </label>
+                        <div className="relative">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none z-10">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                          <input
+                            type="datetime-local"
+                            value={fixedTime}
+                            onChange={(e) => setFixedTime(e.target.value)}
+                            className="flex h-14 w-full rounded-lg border-2 border-foreground/20 bg-background pl-12 pr-4 py-2.5 text-base placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* Option to switch to poll mode */}
                   <button
                     onClick={() => setEventType('poll')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
-                      eventType === 'poll'
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-foreground/70 hover:text-foreground'
-                    }`}
+                    className="w-full group"
                   >
-                    Poll Times
-                  </button>
-                  <button
-                    onClick={() => setEventType('fixed')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
-                      eventType === 'fixed'
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-foreground/70 hover:text-foreground'
-                    }`}
-                  >
-                    Fixed Time
-                  </button>
-                </div>
-              </div>
-
-              {/* Fixed Time Picker */}
-              {eventType === 'fixed' && (
-                <Card>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-semibold mb-3 text-foreground">
-                        Event Date & Time
-                      </label>
-                      <div className="relative">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none z-10">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <Card className="hover:border-blue-600/50 transition-all duration-200 cursor-pointer">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                          <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                           </svg>
                         </div>
-                        <input
-                          type="datetime-local"
-                          value={fixedTime}
-                          onChange={(e) => setFixedTime(e.target.value)}
-                          className="flex h-14 w-full rounded-lg border-2 border-foreground/20 bg-background pl-12 pr-4 py-2.5 text-base placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-                        />
+                        <div className="flex-1 text-left">
+                          <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors">
+                            Find a Time
+                          </h3>
+                          <p className="text-sm text-foreground/60">
+                            Poll your friends on their preferred times
+                          </p>
+                        </div>
+                        <svg className="w-6 h-6 text-foreground/40 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </div>
-                      <p className="text-sm text-foreground/60 mt-2">
-                        This will be the confirmed time for your event
-                      </p>
-                    </div>
-                  </div>
-                </Card>
+                    </Card>
+                  </button>
+                </>
               )}
 
               {/* Poll Times - Quick Presets */}
               {eventType === 'poll' && (
+              <>
+                {/* Option to switch back to fixed time */}
+                <button
+                  onClick={() => setEventType('fixed')}
+                  className="w-full group"
+                >
+                  <Card className="hover:border-blue-600/50 transition-all duration-200 cursor-pointer">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-600/10 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 text-left">
+                        <h3 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition-colors">
+                          Set a Fixed Time
+                        </h3>
+                        <p className="text-sm text-foreground/60">
+                          The event time is already decided
+                        </p>
+                      </div>
+                      <svg className="w-6 h-6 text-foreground/40 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </Card>
+                </button>
+
               <div className="space-y-3">
                 <h2 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide">Quick Start</h2>
                 <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
@@ -559,6 +587,7 @@ export default function CreateEventPage() {
                   </button>
                 </div>
               </div>
+              </>
               )}
 
               {/* Time Slots Display - Poll Only */}
@@ -684,7 +713,7 @@ export default function CreateEventPage() {
                   ← Back
                 </Button>
                 <button
-                  onClick={handleCreateEvent}
+                  onClick={handleCreateEvent} 
                   disabled={isLoading}
                   className="flex-[2] min-h-[52px] rounded-xl font-semibold text-base sm:text-lg shadow-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center"
                 >
