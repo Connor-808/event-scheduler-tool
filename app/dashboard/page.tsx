@@ -28,11 +28,16 @@ export default function DashboardPage() {
   const loadEvents = async (userCookieId: string) => {
     setIsLoading(true);
     try {
+      console.log('🔍 Dashboard Debug - Cookie ID:', userCookieId);
+      
       // Get all events where this cookie exists
       const { data: allUserCookies, error: cookieError } = await supabase
         .from('user_cookies')
         .select('event_id, is_organizer')
         .eq('cookie_id', userCookieId);
+
+      console.log('📊 User cookies found:', allUserCookies);
+      console.log('❌ Cookie query error:', cookieError);
 
       if (cookieError) {
         console.error('Error loading user cookies:', cookieError);
@@ -41,6 +46,7 @@ export default function DashboardPage() {
       }
 
       if (!allUserCookies || allUserCookies.length === 0) {
+        console.log('⚠️ No user_cookies entries found for this cookie ID');
         setCreatedEvents([]);
         setInvitedEvents([]);
         setIsLoading(false);
@@ -55,6 +61,9 @@ export default function DashboardPage() {
         .filter(c => !c.is_organizer)
         .map(c => c.event_id);
 
+      console.log('👤 Organizer event IDs:', organizerEventIds);
+      console.log('📨 Invited event IDs:', invitedEventIds);
+
       // Fetch events user created (organizer)
       if (organizerEventIds.length > 0) {
         const { data: organizedEvents, error: organizedError } = await supabase
@@ -63,12 +72,16 @@ export default function DashboardPage() {
           .in('event_id', organizerEventIds)
           .order('created_at', { ascending: false });
 
+        console.log('✅ Organized events loaded:', organizedEvents);
+        console.log('❌ Organized events error:', organizedError);
+
         if (organizedError) {
           console.error('Error loading organized events:', organizedError);
         } else {
           setCreatedEvents(organizedEvents || []);
         }
       } else {
+        console.log('ℹ️ No organizer events for this user');
         setCreatedEvents([]);
       }
 
@@ -80,12 +93,16 @@ export default function DashboardPage() {
           .in('event_id', invitedEventIds)
           .order('created_at', { ascending: false });
 
+        console.log('✅ Invited events loaded:', participantEvents);
+        console.log('❌ Invited events error:', participantError);
+
         if (participantError) {
           console.error('Error loading invited events:', participantError);
         } else {
           setInvitedEvents(participantEvents || []);
         }
       } else {
+        console.log('ℹ️ No invited events for this user');
         setInvitedEvents([]);
       }
     } catch (error) {

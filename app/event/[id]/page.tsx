@@ -130,6 +130,46 @@ export default function EventVotingPage() {
     }
   };
 
+  // RSVP for single time slot events
+  const handleRSVP = async (attending: boolean) => {
+    if (!event || event.time_slots.length !== 1) return;
+
+    const singleSlot = event.time_slots[0];
+    
+    // Update vote state
+    setVotes({ [singleSlot.timeslot_id]: attending });
+    
+    // Submit immediately
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`/api/events/${eventId}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cookieId,
+          displayName: displayName || null,
+          votes: [{
+            timeslotId: singleSlot.timeslot_id,
+            availability: attending ? 'available' : 'unavailable',
+          }],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit RSVP');
+      }
+
+      setHasVoted(true);
+      setShowConfirmation(true);
+    } catch (error) {
+      console.error('Error submitting RSVP:', error);
+      alert('Failed to submit RSVP. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
@@ -162,8 +202,14 @@ export default function EventVotingPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">Thanks for voting!</h1>
-            <p className="text-base sm:text-lg text-foreground/70">Your availability has been recorded</p>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">
+              {event && event.time_slots.length === 1 ? 'Thanks for responding!' : 'Thanks for voting!'}
+            </h1>
+            <p className="text-base sm:text-lg text-foreground/70">
+              {event && event.time_slots.length === 1 
+                ? 'Your RSVP has been recorded' 
+                : 'Your availability has been recorded'}
+            </p>
           </div>
 
           <Card className="mb-6">
@@ -173,19 +219,44 @@ export default function EventVotingPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <p className="text-sm font-medium text-foreground/60">Times you selected:</p>
-                {event?.time_slots.filter(slot => votes[slot.timeslot_id]).length === 0 ? (
-                  <p className="text-sm text-foreground/60 py-4">You didn&apos;t select any times as available</p>
-                ) : (
-                  event?.time_slots.filter(slot => votes[slot.timeslot_id]).map(slot => (
-                    <div key={slot.timeslot_id} className="flex items-center gap-3 py-2 border-b border-foreground/10 last:border-0">
-                      <div className="text-green-600">✓</div>
-                      <div className="text-sm flex-1">
-                        <div className="font-medium">{formatDateTime(slot.start_time)}</div>
-                        {slot.label && <div className="text-foreground/60">{slot.label}</div>}
+                {event && event.time_slots.length === 1 ? (
+                  // Single time slot - show RSVP status
+                  <div className="text-center py-4">
+                    <p className="text-sm font-medium text-foreground/60 mb-3">Your response:</p>
+                    {votes[event.time_slots[0].timeslot_id] ? (
+                      <div className="flex items-center justify-center gap-2 text-green-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="font-bold text-lg">I&apos;m in - I can attend</span>
                       </div>
-                    </div>
-                  ))
+                    ) : (
+                      <div className="flex items-center justify-center gap-2 text-red-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <span className="font-bold text-lg">Can&apos;t make it</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Multiple time slots - show selected times
+                  <>
+                    <p className="text-sm font-medium text-foreground/60">Times you selected:</p>
+                    {event?.time_slots.filter(slot => votes[slot.timeslot_id]).length === 0 ? (
+                      <p className="text-sm text-foreground/60 py-4">You didn&apos;t select any times as available</p>
+                    ) : (
+                      event?.time_slots.filter(slot => votes[slot.timeslot_id]).map(slot => (
+                        <div key={slot.timeslot_id} className="flex items-center gap-3 py-2 border-b border-foreground/10 last:border-0">
+                          <div className="text-green-600">✓</div>
+                          <div className="text-sm flex-1">
+                            <div className="font-medium">{formatDateTime(slot.start_time)}</div>
+                            {slot.label && <div className="text-foreground/60">{slot.label}</div>}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </>
                 )}
               </div>
             </CardContent>
@@ -193,7 +264,7 @@ export default function EventVotingPage() {
 
           <div className="space-y-3">
             <Button variant="secondary" onClick={() => setShowConfirmation(false)} className="w-full">
-              Change My Votes
+              {event && event.time_slots.length === 1 ? 'Change My Response' : 'Change My Votes'}
             </Button>
             <p className="text-center text-sm text-foreground/60">
               The organizer will pick a time soon. Bookmark this page to check back later.
@@ -397,75 +468,156 @@ export default function EventVotingPage() {
             </CardHeader>
           </Card>
 
-          {/* Voting Prompt */}
-          <div className="text-center mb-6 sm:mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-2 leading-tight">What times work for you?</h2>
-            <p className="text-base sm:text-lg text-foreground/70">
-              {hasVoted ? 'You can update your availability anytime' : 'Select all times that work for you'}
-            </p>
-          </div>
+          {/* Single Time Slot - RSVP Mode */}
+          {event && event.time_slots.length === 1 ? (
+            <>
+              {/* Event Time Display */}
+              <div className="text-center mb-8">
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 text-foreground/80">You&apos;re invited to:</h2>
+                <Card className="p-6 mb-8 bg-gradient-to-br from-blue-50/50 to-purple-50/30 dark:from-blue-950/20 dark:to-purple-950/10 border-2">
+                  <div className="text-center">
+                    <div className="text-2xl sm:text-3xl font-bold mb-2">
+                      {formatDateTime(event.time_slots[0].start_time)}
+                    </div>
+                    {event.time_slots[0].label && (
+                      <div className="text-lg text-foreground/70">{event.time_slots[0].label}</div>
+                    )}
+                  </div>
+                </Card>
+                <h3 className="text-xl sm:text-2xl font-bold mb-2">Can you make it?</h3>
+                <p className="text-base text-foreground/70">
+                  {hasVoted ? 'You can change your response anytime' : 'Let the organizer know if you can attend'}
+                </p>
+              </div>
 
-          {/* Quick Actions - Select All / Clear All */}
-          {event && event.time_slots.length > 2 && (
-            <div className="flex gap-3 mb-4">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  const allAvailable: VoteState = {};
-                  event.time_slots.forEach(slot => {
-                    allAvailable[slot.timeslot_id] = true;
-                  });
-                  setVotes(allAvailable);
-                }}
-                disabled={Object.values(votes).filter(Boolean).length === event.time_slots.length}
-                className="flex-1"
-              >
-                ✓ Select All
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => setVotes({})}
-                disabled={Object.values(votes).filter(Boolean).length === 0}
-                className="flex-1"
-              >
-                Clear All
-              </Button>
-            </div>
-          )}
-
-          {/* Time Slots */}
-          <div className="space-y-3 sm:space-y-4 mb-6">
-            {event?.time_slots.map((slot) => (
-              <button
-                key={slot.timeslot_id}
-                onClick={() => handleToggle(slot.timeslot_id)}
-                className={`w-full p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-4 min-h-[76px] touch-manipulation ${
-                  votes[slot.timeslot_id]
-                    ? 'border-green-600 bg-green-600/10 shadow-sm'
-                    : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
-                }`}
-              >
-                {/* Checkbox - WCAG AA minimum 44x44px touch target via padding */}
-                <div className={`flex-shrink-0 w-8 h-8 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center transition-all ${
-                  votes[slot.timeslot_id]
-                    ? 'bg-green-600 border-green-600'
-                    : 'border-foreground/40'
-                }`}>
-                  {votes[slot.timeslot_id] && (
-                    <svg className="w-5 h-5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              {/* RSVP Buttons */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <button
+                  onClick={() => handleRSVP(true)}
+                  disabled={isSubmitting}
+                  className={`p-6 sm:p-8 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-3 min-h-[140px] ${
+                    hasVoted && votes[event.time_slots[0].timeslot_id]
+                      ? 'border-green-600 bg-green-600/10 shadow-lg scale-105'
+                      : 'border-foreground/20 hover:border-green-600/50 hover:bg-green-600/5 active:scale-95'
+                  }`}
+                >
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center ${
+                    hasVoted && votes[event.time_slots[0].timeslot_id]
+                      ? 'bg-green-600'
+                      : 'bg-green-600/20'
+                  }`}>
+                    <svg className={`w-8 h-8 sm:w-10 sm:h-10 ${
+                      hasVoted && votes[event.time_slots[0].timeslot_id] ? 'text-white' : 'text-green-600'
+                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                     </svg>
-                  )}
-                </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-lg sm:text-xl text-green-600">I&apos;m in</div>
+                    <div className="text-sm text-foreground/60 mt-1">I can attend</div>
+                  </div>
+                </button>
 
-                {/* Time Info */}
-                <div className="flex-1">
-                  <div className="font-bold text-base sm:text-lg">{formatDateTime(slot.start_time)}</div>
-                  {slot.label && <div className="text-sm sm:text-base text-foreground/70 mt-0.5">{slot.label}</div>}
+                <button
+                  onClick={() => handleRSVP(false)}
+                  disabled={isSubmitting}
+                  className={`p-6 sm:p-8 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-3 min-h-[140px] ${
+                    hasVoted && !votes[event.time_slots[0].timeslot_id]
+                      ? 'border-red-600 bg-red-600/10 shadow-lg scale-105'
+                      : 'border-foreground/20 hover:border-red-600/50 hover:bg-red-600/5 active:scale-95'
+                  }`}
+                >
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center ${
+                    hasVoted && !votes[event.time_slots[0].timeslot_id]
+                      ? 'bg-red-600'
+                      : 'bg-red-600/20'
+                  }`}>
+                    <svg className={`w-8 h-8 sm:w-10 sm:h-10 ${
+                      hasVoted && !votes[event.time_slots[0].timeslot_id] ? 'text-white' : 'text-red-600'
+                    }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-lg sm:text-xl text-red-600">Can&apos;t make it</div>
+                    <div className="text-sm text-foreground/60 mt-1">I can&apos;t attend</div>
+                  </div>
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Multi Time Slot - Voting Mode */}
+              <div className="text-center mb-6 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2 leading-tight">What times work for you?</h2>
+                <p className="text-base sm:text-lg text-foreground/70">
+                  {hasVoted ? 'You can update your availability anytime' : 'Select all times that work for you'}
+                </p>
+              </div>
+
+              {/* Quick Actions - Select All / Clear All */}
+              {event && event.time_slots.length > 2 && (
+                <div className="flex gap-3 mb-4">
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      const allAvailable: VoteState = {};
+                      event.time_slots.forEach(slot => {
+                        allAvailable[slot.timeslot_id] = true;
+                      });
+                      setVotes(allAvailable);
+                    }}
+                    disabled={Object.values(votes).filter(Boolean).length === event.time_slots.length}
+                    className="flex-1"
+                  >
+                    ✓ Select All
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setVotes({})}
+                    disabled={Object.values(votes).filter(Boolean).length === 0}
+                    className="flex-1"
+                  >
+                    Clear All
+                  </Button>
                 </div>
-              </button>
-            ))}
-          </div>
+              )}
+
+              {/* Time Slots */}
+              <div className="space-y-3 sm:space-y-4 mb-6">
+                {event?.time_slots.map((slot) => (
+                  <button
+                    key={slot.timeslot_id}
+                    onClick={() => handleToggle(slot.timeslot_id)}
+                    className={`w-full p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-4 min-h-[76px] touch-manipulation ${
+                      votes[slot.timeslot_id]
+                        ? 'border-green-600 bg-green-600/10 shadow-sm'
+                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
+                    }`}
+                  >
+                    {/* Checkbox - WCAG AA minimum 44x44px touch target via padding */}
+                    <div className={`flex-shrink-0 w-8 h-8 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center transition-all ${
+                      votes[slot.timeslot_id]
+                        ? 'bg-green-600 border-green-600'
+                        : 'border-foreground/40'
+                    }`}>
+                      {votes[slot.timeslot_id] && (
+                        <svg className="w-5 h-5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+
+                    {/* Time Info */}
+                    <div className="flex-1">
+                      <div className="font-bold text-base sm:text-lg">{formatDateTime(slot.start_time)}</div>
+                      {slot.label && <div className="text-sm sm:text-base text-foreground/70 mt-0.5">{slot.label}</div>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Display Name */}
           <Card className="p-4 mb-6">
@@ -488,35 +640,42 @@ export default function EventVotingPage() {
             />
           </div>
 
-          {/* Desktop Submit Button - hidden on mobile */}
-          <div className="hidden sm:block">
+          {/* Submit Buttons - Only show for multi-time-slot events */}
+          {event && event.time_slots.length > 1 && (
+            <>
+              {/* Desktop Submit Button - hidden on mobile */}
+              <div className="hidden sm:block">
+                <Button
+                  size="lg"
+                  onClick={handleSubmit}
+                  isLoading={isSubmitting}
+                  className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white"
+                >
+                  {hasVoted ? 'Update My Availability' : 'Submit My Availability'}
+                  {selectedCount > 0 && ` (${selectedCount} selected)`}
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Fixed Bottom CTA - Mobile Only, hide for single time slot events */}
+      {event && event.time_slots.length > 1 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
+          <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <Button
               size="lg"
               onClick={handleSubmit}
               isLoading={isSubmitting}
-              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white"
+              className="w-full min-h-[52px] shadow-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white"
             >
               {hasVoted ? 'Update My Availability' : 'Submit My Availability'}
-              {selectedCount > 0 && ` (${selectedCount} selected)`}
+              {selectedCount > 0 && ` (${selectedCount})`}
             </Button>
           </div>
         </div>
-      </div>
-
-      {/* Fixed Bottom CTA - Mobile Only */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
-        <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
-          <Button
-            size="lg"
-            onClick={handleSubmit}
-            isLoading={isSubmitting}
-            className="w-full min-h-[52px] shadow-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white"
-          >
-            {hasVoted ? 'Update My Availability' : 'Submit My Availability'}
-            {selectedCount > 0 && ` (${selectedCount})`}
-          </Button>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
