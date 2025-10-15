@@ -38,7 +38,8 @@ export default function RootLayout({
             __html: `
               (function() {
                 const theme = localStorage.getItem('theme');
-                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                // Default to dark mode if no theme is saved
+                if (theme === 'dark' || !theme) {
                   document.documentElement.classList.add('dark');
                 }
               })();
