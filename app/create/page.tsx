@@ -34,9 +34,15 @@ export default function CreateEventPage() {
   const [step, setStep] = useState<Step>('event-details');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Event Type State
+  const [eventType, setEventType] = useState<'poll' | 'fixed'>('poll');
+
   // Time Selection State
   const [presetType, setPresetType] = useState<'this-weekend' | 'next-weekend' | 'weekday' | 'weekend-warrior' | 'coffee-catchup' | 'lazy-sunday' | 'unemployed-friend' | 'chill-evenings' | null>(null);
   const [timeSlots, setTimeSlots] = useState<TimeSlotInput[]>([]);
+  
+  // Fixed Time State
+  const [fixedTime, setFixedTime] = useState('');
 
   // Event Details State
   const [title, setTitle] = useState('');
@@ -174,6 +180,14 @@ export default function CreateEventPage() {
   };
 
   const validateTimeSelection = (): boolean => {
+    if (eventType === 'fixed') {
+      if (!fixedTime) {
+        alert('Please select a time for your event');
+        return false;
+      }
+      return true;
+    }
+    
     const filledSlots = timeSlots.filter((slot) => slot.start_time);
     
     if (filledSlots.length < 2) {
@@ -220,13 +234,18 @@ export default function CreateEventPage() {
         }
       }
 
-      // Prepare time slots - filter out empty ones and convert to proper format
-      const timeSlotsForSubmission = timeSlots
-        .filter((slot) => slot.start_time)
-        .map((slot) => ({
-          start_time: new Date(slot.start_time),
-          label: slot.label || '',
-        }));
+      // Prepare time slots based on event type
+      const timeSlotsForSubmission = eventType === 'fixed'
+        ? [{
+            start_time: new Date(fixedTime),
+            label: 'Event Time',
+          }]
+        : timeSlots
+            .filter((slot) => slot.start_time)
+            .map((slot) => ({
+              start_time: new Date(slot.start_time),
+              label: slot.label || '',
+            }));
 
       const cookieId = getUserCookieId();
 
@@ -370,10 +389,68 @@ export default function CreateEventPage() {
             <div className="space-y-6 sm:space-y-8">
               <div className="text-center space-y-3">
                 <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When should we meet?</h1>
-                <p className="text-base sm:text-lg text-foreground/70">Select times for friends to vote on</p>
+                <p className="text-base sm:text-lg text-foreground/70">
+                  {eventType === 'poll' ? 'Select times for friends to vote on' : 'Set the fixed time for your event'}
+                </p>
               </div>
 
-              {/* Quick Presets - Compact horizontal layout */}
+              {/* Event Type Selector */}
+              <div className="max-w-md mx-auto">
+                <div className="flex gap-2 p-1 bg-foreground/5 rounded-xl">
+                  <button
+                    onClick={() => setEventType('poll')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
+                      eventType === 'poll'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-foreground/70 hover:text-foreground'
+                    }`}
+                  >
+                    Poll Times
+                  </button>
+                  <button
+                    onClick={() => setEventType('fixed')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
+                      eventType === 'fixed'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-foreground/70 hover:text-foreground'
+                    }`}
+                  >
+                    Fixed Time
+                  </button>
+                </div>
+              </div>
+
+              {/* Fixed Time Picker */}
+              {eventType === 'fixed' && (
+                <Card>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold mb-3 text-foreground">
+                        Event Date & Time
+                      </label>
+                      <div className="relative">
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none z-10">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <input
+                          type="datetime-local"
+                          value={fixedTime}
+                          onChange={(e) => setFixedTime(e.target.value)}
+                          className="flex h-14 w-full rounded-lg border-2 border-foreground/20 bg-background pl-12 pr-4 py-2.5 text-base placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                        />
+                      </div>
+                      <p className="text-sm text-foreground/60 mt-2">
+                        This will be the confirmed time for your event
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {/* Poll Times - Quick Presets */}
+              {eventType === 'poll' && (
               <div className="space-y-3">
                 <h2 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide">Quick Start</h2>
                 <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
@@ -482,8 +559,10 @@ export default function CreateEventPage() {
                   </button>
                 </div>
               </div>
+              )}
 
-              {/* Time Slots Display */}
+              {/* Time Slots Display - Poll Only */}
+              {eventType === 'poll' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide">Your Schedule</h2>
@@ -567,6 +646,7 @@ export default function CreateEventPage() {
                   </div>
                 )}
               </div>
+              )}
             </div>
           )}
         </div>
@@ -584,8 +664,8 @@ export default function CreateEventPage() {
             </button>
           ) : (
             <div className="space-y-3">
-              {/* Add Time Slot button - always show if under limit */}
-              {timeSlots.length < 10 && (
+              {/* Add Time Slot button - only show for poll events if under limit */}
+              {eventType === 'poll' && timeSlots.length < 10 && (
                 <Button 
                   variant="secondary" 
                   onClick={addCustomSlot} 
