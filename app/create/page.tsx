@@ -380,101 +380,105 @@ export default function CreateEventPage() {
                   {/* Popular presets */}
                   <button
                     onClick={() => handlePresetSelect('weekend-warrior')}
-                    className={`relative flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
+                    className={`relative flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'weekend-warrior'
-                        ? 'border-foreground shadow-sm'
-                        : 'border-foreground/30 hover:border-foreground/50 hover:shadow-sm'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-background border-foreground/20 hover:border-blue-600/50 hover:bg-blue-600/5 hover:shadow-sm'
                     }`}
                   >
-                    <div className="absolute -top-2 -right-2 bg-foreground text-background text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
+                    <div className={`absolute -top-2 -right-2 text-[10px] font-bold px-2 py-0.5 rounded-full z-10 ${
+                      presetType === 'weekend-warrior' 
+                        ? 'bg-white text-blue-600' 
+                        : 'bg-blue-600 text-white'
+                    }`}>
                       Popular
                     </div>
                     <div className="text-sm font-bold mb-0.5">Weekend Warrior</div>
-                    <div className="text-xs text-foreground/60">Fri & Sat 8pm</div>
+                    <div className={`text-xs ${presetType === 'weekend-warrior' ? 'text-white/80' : 'text-foreground/60'}`}>Fri & Sat 8pm</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('chill-evenings')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'chill-evenings'
-                        ? 'border-foreground shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-background border-foreground/20 hover:border-blue-600/50 hover:bg-blue-600/5 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Chill Evenings</div>
-                    <div className="text-xs text-foreground/60">Tue, Wed, Thu</div>
+                    <div className={`text-xs ${presetType === 'chill-evenings' ? 'text-white/80' : 'text-foreground/60'}`}>Tue, Wed, Thu</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('this-weekend')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'this-weekend'
-                        ? 'border-foreground shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-background border-foreground/20 hover:border-blue-600/50 hover:bg-blue-600/5 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">This Weekend</div>
-                    <div className="text-xs text-foreground/60">Sat & Sun</div>
+                    <div className={`text-xs ${presetType === 'this-weekend' ? 'text-white/80' : 'text-foreground/60'}`}>Sat & Sun</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('next-weekend')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'next-weekend'
-                        ? 'border-foreground shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-background border-foreground/20 hover:border-blue-600/50 hover:bg-blue-600/5 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Next Weekend</div>
-                    <div className="text-xs text-foreground/60">Next Sat & Sun</div>
+                    <div className={`text-xs ${presetType === 'next-weekend' ? 'text-white/80' : 'text-foreground/60'}`}>Next Sat & Sun</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('coffee-catchup')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'coffee-catchup'
-                        ? 'border-foreground shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-background border-foreground/20 hover:border-blue-600/50 hover:bg-blue-600/5 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Coffee & Catchup</div>
-                    <div className="text-xs text-foreground/60">Weekday mornings</div>
+                    <div className={`text-xs ${presetType === 'coffee-catchup' ? 'text-white/80' : 'text-foreground/60'}`}>Weekday mornings</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('lazy-sunday')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'lazy-sunday'
-                        ? 'border-foreground shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-background border-foreground/20 hover:border-blue-600/50 hover:bg-blue-600/5 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Lazy Sunday</div>
-                    <div className="text-xs text-foreground/60">Brunch & chill</div>
+                    <div className={`text-xs ${presetType === 'lazy-sunday' ? 'text-white/80' : 'text-foreground/60'}`}>Brunch & chill</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('unemployed-friend')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'unemployed-friend'
-                        ? 'border-foreground shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-background border-foreground/20 hover:border-blue-600/50 hover:bg-blue-600/5 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Unemployed Friend</div>
-                    <div className="text-xs text-foreground/60">Weekday midday</div>
+                    <div className={`text-xs ${presetType === 'unemployed-friend' ? 'text-white/80' : 'text-foreground/60'}`}>Weekday midday</div>
                   </button>
 
                   <button
                     onClick={() => handlePresetSelect('weekday')}
-                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] bg-white ${
+                    className={`flex-shrink-0 px-4 py-3 rounded-lg border-2 transition-all duration-200 min-w-[140px] ${
                       presetType === 'weekday'
-                        ? 'border-foreground shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 hover:shadow-sm'
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                        : 'bg-background border-foreground/20 hover:border-blue-600/50 hover:bg-blue-600/5 hover:shadow-sm'
                     }`}
                   >
                     <div className="text-sm font-bold mb-0.5">Weekday Evenings</div>
-                    <div className="text-xs text-foreground/60">Mon-Fri 7pm</div>
+                    <div className={`text-xs ${presetType === 'weekday' ? 'text-white/80' : 'text-foreground/60'}`}>Mon-Fri 7pm</div>
                   </button>
                 </div>
               </div>
@@ -572,9 +576,12 @@ export default function CreateEventPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
         <div className="px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           {step === 'event-details' ? (
-            <Button size="lg" onClick={handleNextStep} className="w-full min-h-[52px] shadow-lg">
+            <button 
+              onClick={handleNextStep}
+              className="w-full min-h-[52px] rounded-xl font-semibold text-base sm:text-lg shadow-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white transition-all duration-200"
+            >
               Next: Choose Times →
-            </Button>
+            </button>
           ) : (
             <div className="space-y-3">
               {/* Add Time Slot button - always show if under limit */}
@@ -596,14 +603,39 @@ export default function CreateEventPage() {
                 >
                   ← Back
                 </Button>
-                <Button 
-                  size="lg" 
-                  onClick={handleCreateEvent} 
-                  isLoading={isLoading}
-                  className="flex-[2] min-h-[52px] shadow-lg"
+                <button
+                  onClick={handleCreateEvent}
+                  disabled={isLoading}
+                  className="flex-[2] min-h-[52px] rounded-xl font-semibold text-base sm:text-lg shadow-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center"
                 >
-                  Create Event
-                </Button>
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="mr-2 h-4 w-4 animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      <span>Creating...</span>
+                    </>
+                  ) : (
+                    'Create Event'
+                  )}
+                </button>
               </div>
             </div>
           )}
@@ -615,18 +647,51 @@ export default function CreateEventPage() {
         <div className="max-w-3xl mx-auto">
           {step === 'event-details' ? (
             <div className="flex justify-end">
-              <Button size="lg" onClick={handleNextStep}>
+              <button 
+                onClick={handleNextStep}
+                className="h-14 px-8 rounded-xl font-semibold text-base sm:text-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white transition-all duration-200"
+              >
                 Next: Choose Times
-              </Button>
+              </button>
             </div>
           ) : (
             <div className="flex gap-3 justify-between">
               <Button variant="secondary" onClick={() => setStep('event-details')}>
                 Back
               </Button>
-              <Button size="lg" onClick={handleCreateEvent} isLoading={isLoading}>
-                Create Event
-              </Button>
+              <button
+                onClick={handleCreateEvent}
+                disabled={isLoading}
+                className="h-14 px-8 rounded-xl font-semibold text-base sm:text-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center"
+              >
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="mr-2 h-4 w-4 animate-spin"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <span>Creating...</span>
+                  </>
+                ) : (
+                  'Create Event'
+                )}
+              </button>
             </div>
           )}
         </div>
