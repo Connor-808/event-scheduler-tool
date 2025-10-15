@@ -15,13 +15,11 @@ export default function DashboardPage() {
   const [createdEvents, setCreatedEvents] = useState<Event[]>([]);
   const [invitedEvents, setInvitedEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [cookieId, setCookieId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<TabType>('created');
 
   useEffect(() => {
     const loadMyEvents = async () => {
       const userCookieId = getUserCookieId();
-      setCookieId(userCookieId);
       await loadEvents(userCookieId);
     };
     loadMyEvents();

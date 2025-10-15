@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { supabase } from './supabase';
+import { supabase, Event, UserCookie } from './supabase';
 
 /**
  * Standard API error response
@@ -27,7 +27,7 @@ export function successResponse<T>(data: T, status: number = 200) {
 export async function verifyEventExists(
   eventId: string,
   selectFields: string = '*'
-): Promise<{ event: any; error: null } | { event: null; error: NextResponse }> {
+): Promise<{ event: Event; error: null } | { event: null; error: NextResponse }> {
   const { data: event, error: eventError } = await supabase
     .from('events')
     .select(selectFields)
@@ -41,7 +41,7 @@ export async function verifyEventExists(
     };
   }
 
-  return { event, error: null };
+  return { event: event as unknown as Event, error: null };
 }
 
 /**
@@ -91,7 +91,7 @@ export async function verifyOrganizer(
 export async function verifyUserCookie(
   eventId: string,
   cookieId: string
-): Promise<{ userCookie: any; error: null } | { userCookie: null; error: NextResponse }> {
+): Promise<{ userCookie: UserCookie; error: null } | { userCookie: null; error: NextResponse }> {
   const { data: userCookie, error: cookieError } = await supabase
     .from('user_cookies')
     .select('*')
@@ -106,7 +106,7 @@ export async function verifyUserCookie(
     };
   }
 
-  return { userCookie, error: null };
+  return { userCookie: userCookie as unknown as UserCookie, error: null };
 }
 
 /**
@@ -116,7 +116,7 @@ export async function parseRequestBody<T>(request: Request): Promise<{ data: T; 
   try {
     const data = await request.json();
     return { data, error: null };
-  } catch (error) {
+  } catch {
     return {
       data: null,
       error: errorResponse('Invalid JSON in request body', 400),
@@ -128,7 +128,7 @@ export async function parseRequestBody<T>(request: Request): Promise<{ data: T; 
  * Validate required fields in request body
  */
 export function validateRequiredFields(
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   requiredFields: string[]
 ): { valid: true } | { valid: false; error: NextResponse } {
   const missing = requiredFields.filter(field => !data[field]);

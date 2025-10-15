@@ -66,7 +66,7 @@ export default function SharePage() {
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    if (isMobile && navigator.share) {
+    if (isMobile && typeof navigator.share === 'function') {
       // Wait for success animation to complete (1.5s)
       const timer = setTimeout(() => {
         handleShare();
@@ -75,7 +75,7 @@ export default function SharePage() {
 
       return () => clearTimeout(timer);
     }
-  }, [event, isLoading, autoShared]);
+  }, [event, isLoading, autoShared, handleShare]);
 
   if (isLoading) {
     return (
