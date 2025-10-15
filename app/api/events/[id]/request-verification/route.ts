@@ -88,7 +88,7 @@ export async function POST(
       );
 
       await twilioClient.messages.create({
-        body: `Your MUUVS verification code is: ${verificationCode}`,
+        body: `Your Friendr.io verification code is: ${verificationCode}`,
         from: process.env.TWILIO_PHONE_NUMBER,
         to: formattedPhone,
       });

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Event Scheduler - Find the perfect time for everyone",
+  title: "Friendr.io - Find the perfect time for everyone",
   description: "Schedule plans with friends, effortlessly. No accounts, no hassle. Just create a poll, share the link, and find the perfect time.",
 };
 
