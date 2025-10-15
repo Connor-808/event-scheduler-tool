@@ -14,9 +14,10 @@ export default function SharePage() {
   const [event, setEvent] = useState<EventWithDetails | null>(null);
   const [copied, setCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [autoShared, setAutoShared] = useState(false);
 
-  const shareUrl = typeof window !== 'undefined' 
-    ? `${window.location.origin}/event/${eventId}` 
+  const shareUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/event/${eventId}`
     : '';
 
   useEffect(() => {
@@ -58,6 +59,23 @@ export default function SharePage() {
       handleCopyLink();
     }
   };
+
+  // Auto-trigger share on mobile after success animation
+  useEffect(() => {
+    if (autoShared || !event || isLoading) return;
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile && navigator.share) {
+      // Wait for success animation to complete (1.5s)
+      const timer = setTimeout(() => {
+        handleShare();
+        setAutoShared(true);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [event, isLoading, autoShared]);
 
   if (isLoading) {
     return (

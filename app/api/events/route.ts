@@ -15,9 +15,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!Array.isArray(timeSlots) || timeSlots.length < 2) {
+    if (!Array.isArray(timeSlots) || timeSlots.length < 1) {
       return NextResponse.json(
-        { error: 'At least 2 time slots required' },
+        { error: 'At least 1 time slot required' },
         { status: 400 }
       );
     }

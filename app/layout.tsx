@@ -20,7 +20,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  // maximumScale removed for WCAG AA 1.4.4 compliance (allows pinch-zoom for low vision users)
+  // 16px input font-size in globals.css prevents unwanted zoom-on-focus in iOS
   viewportFit: 'cover',
 };
 

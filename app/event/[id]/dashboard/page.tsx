@@ -61,11 +61,14 @@ export default function DashboardPage() {
 
       setIsLoading(false);
 
-      // Set up real-time subscription for votes
+      // Set up real-time subscription for votes with debouncing
       const timeslotIds = eventData.time_slots.map((ts) => ts.timeslot_id);
-      
+
+      // Debounce timer for vote updates (prevent UI thrashing)
+      let debounceTimer: NodeJS.Timeout;
+
       const channel = supabase
-        .channel('dashboard-votes')
+        .channel(`dashboard-votes-${eventId}`)
         .on(
           'postgres_changes',
           {
@@ -74,15 +77,19 @@ export default function DashboardPage() {
             table: 'votes',
             filter: `timeslot_id=in.(${timeslotIds.join(',')})`,
           },
-          async () => {
-            // Reload vote breakdown on any vote change
-            const newBreakdown = await getVoteBreakdown(eventId);
-            setTimeSlots(newBreakdown);
+          () => {
+            // Debounce rapid vote changes (1 second delay)
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+              const newBreakdown = await getVoteBreakdown(eventId);
+              setTimeSlots(newBreakdown);
+            }, 1000);
           }
         )
         .subscribe();
 
       return () => {
+        clearTimeout(debounceTimer);
         supabase.removeChannel(channel);
       };
     }
@@ -392,10 +399,10 @@ export default function DashboardPage() {
               </p>
 
               <ModalFooter>
-                <Button variant="secondary" onClick={() => setLockModalOpen(false)} className="min-h-[52px]">
+                <Button variant="secondary" onClick={() => setLockModalOpen(false)} className="min-h-[52px] w-full sm:w-auto">
                   Cancel
                 </Button>
-                <Button onClick={handleLockConfirm} isLoading={isLocking} className="min-h-[52px]">
+                <Button onClick={handleLockConfirm} isLoading={isLocking} className="min-h-[52px] w-full sm:w-auto">
                   Yes, Lock It In
                 </Button>
               </ModalFooter>

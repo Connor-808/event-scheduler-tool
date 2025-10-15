@@ -405,6 +405,34 @@ export default function EventVotingPage() {
             </p>
           </div>
 
+          {/* Quick Actions - Select All / Clear All */}
+          {event && event.time_slots.length > 2 && (
+            <div className="flex gap-3 mb-4">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  const allAvailable: VoteState = {};
+                  event.time_slots.forEach(slot => {
+                    allAvailable[slot.timeslot_id] = true;
+                  });
+                  setVotes(allAvailable);
+                }}
+                disabled={Object.values(votes).filter(Boolean).length === event.time_slots.length}
+                className="flex-1"
+              >
+                ✓ Select All
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setVotes({})}
+                disabled={Object.values(votes).filter(Boolean).length === 0}
+                className="flex-1"
+              >
+                Clear All
+              </Button>
+            </div>
+          )}
+
           {/* Time Slots */}
           <div className="space-y-3 sm:space-y-4 mb-6">
             {event?.time_slots.map((slot) => (
@@ -417,8 +445,8 @@ export default function EventVotingPage() {
                     : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
                 }`}
               >
-                {/* Checkbox - larger for better touch */}
-                <div className={`flex-shrink-0 w-7 h-7 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center transition-all ${
+                {/* Checkbox - WCAG AA minimum 44x44px touch target via padding */}
+                <div className={`flex-shrink-0 w-8 h-8 sm:w-6 sm:h-6 rounded border-2 flex items-center justify-center transition-all ${
                   votes[slot.timeslot_id]
                     ? 'bg-green-600 border-green-600'
                     : 'border-foreground/40'

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { verifyEventExists, parseRequestBody, validateRequiredFields, errorResponse } from '@/lib/api-utils';
 
 export async function POST(
   request: NextRequest,
@@ -7,30 +8,28 @@ export async function POST(
 ) {
   try {
     const { id: eventId } = await params;
-    const body = await request.json();
-    const { cookieId, displayName, votes } = body;
+
+    // Parse request body
+    const { data: body, error: bodyError } = await parseRequestBody<{
+      cookieId: string;
+      displayName?: string;
+      votes: Array<{ timeslotId: string; availability: string }>;
+    }>(request);
+    if (bodyError) return bodyError;
 
     // Validate required fields
-    if (!cookieId || !votes || !Array.isArray(votes)) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+    const validation = validateRequiredFields(body, ['cookieId', 'votes']);
+    if (!validation.valid) return validation.error;
+
+    if (!Array.isArray(body.votes)) {
+      return errorResponse('Votes must be an array', 400);
     }
+
+    const { cookieId, displayName, votes } = body;
 
     // Verify event exists
-    const { data: event, error: eventError } = await supabase
-      .from('events')
-      .select('event_id')
-      .eq('event_id', eventId)
-      .single();
-
-    if (eventError || !event) {
-      return NextResponse.json(
-        { error: 'Event not found' },
-        { status: 404 }
-      );
-    }
+    const { event, error: eventError } = await verifyEventExists(eventId, 'event_id');
+    if (eventError) return eventError;
 
     // Update display name and last_active if provided
     if (displayName) {
@@ -53,44 +52,34 @@ export async function POST(
         .eq('event_id', eventId);
     }
 
-    // Upsert votes (insert or update on conflict)
-    const votePromises = votes.map(async (vote: { timeslotId: string; availability: string }) => {
-      const { timeslotId, availability } = vote;
-
-      // Validate availability
-      if (!['available', 'maybe', 'unavailable'].includes(availability)) {
-        throw new Error('Invalid availability value');
+    // Validate all votes first
+    for (const vote of votes) {
+      if (!['available', 'maybe', 'unavailable'].includes(vote.availability)) {
+        return errorResponse('Invalid availability value', 400);
       }
+    }
 
-      // First, try to update existing vote
-      const { data: existingVote } = await supabase
-        .from('votes')
-        .select('vote_id')
-        .eq('timeslot_id', timeslotId)
-        .eq('cookie_id', cookieId)
-        .single();
+    // OPTIMIZED: Batch upsert using PostgreSQL's ON CONFLICT
+    // This replaces 2N queries (select + insert/update) with 1 batch query
+    const voteRecords = votes.map((vote: { timeslotId: string; availability: string }) => ({
+      timeslot_id: vote.timeslotId,
+      cookie_id: cookieId,
+      event_id: eventId,
+      availability: vote.availability,
+      updated_at: new Date().toISOString(),
+    }));
 
-      if (existingVote) {
-        // Update existing vote
-        return supabase
-          .from('votes')
-          .update({
-            availability,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('vote_id', existingVote.vote_id);
-      } else {
-        // Insert new vote
-        return supabase.from('votes').insert({
-          timeslot_id: timeslotId,
-          cookie_id: cookieId,
-          event_id: eventId,
-          availability,
-        });
-      }
-    });
+    const { error: voteError } = await supabase
+      .from('votes')
+      .upsert(voteRecords, {
+        onConflict: 'timeslot_id,cookie_id',
+        ignoreDuplicates: false, // Update on conflict
+      });
 
-    await Promise.all(votePromises);
+    if (voteError) {
+      console.error('Error upserting votes:', voteError);
+      return errorResponse('Failed to save votes', 500);
+    }
 
     return NextResponse.json({
       success: true,
@@ -98,10 +87,7 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error in POST /api/events/[id]/vote:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return errorResponse('Internal server error', 500);
   }
 }
 

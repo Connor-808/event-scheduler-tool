@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { verifyEventExists, verifyOrganizer, parseRequestBody, validateRequiredFields, errorResponse } from '@/lib/api-utils';
 
 export async function POST(
   request: NextRequest,
@@ -7,45 +8,27 @@ export async function POST(
 ) {
   try {
     const { id: eventId } = await params;
-    const body = await request.json();
-    const { timeslotId, cookieId } = body;
+
+    // Parse request body
+    const { data: body, error: bodyError } = await parseRequestBody<{
+      timeslotId: string;
+      cookieId: string;
+    }>(request);
+    if (bodyError) return bodyError;
 
     // Validate required fields
-    if (!timeslotId || !cookieId) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
+    const validation = validateRequiredFields(body, ['timeslotId', 'cookieId']);
+    if (!validation.valid) return validation.error;
+
+    const { timeslotId, cookieId } = body;
 
     // Verify event exists
-    const { data: event, error: eventError } = await supabase
-      .from('events')
-      .select('*')
-      .eq('event_id', eventId)
-      .single();
-
-    if (eventError || !event) {
-      return NextResponse.json(
-        { error: 'Event not found' },
-        { status: 404 }
-      );
-    }
+    const { event, error: eventError } = await verifyEventExists(eventId);
+    if (eventError) return eventError;
 
     // Verify user is organizer
-    const { data: userCookie, error: cookieError } = await supabase
-      .from('user_cookies')
-      .select('*')
-      .eq('cookie_id', cookieId)
-      .eq('event_id', eventId)
-      .single();
-
-    if (cookieError || !userCookie || !userCookie.is_organizer) {
-      return NextResponse.json(
-        { error: 'Unauthorized - only organizer can lock time' },
-        { status: 403 }
-      );
-    }
+    const { isOrganizer, error: organizerError } = await verifyOrganizer(eventId, cookieId);
+    if (organizerError) return organizerError;
 
     // Verify timeslot belongs to this event
     const { data: timeslot, error: slotError } = await supabase
@@ -56,10 +39,7 @@ export async function POST(
       .single();
 
     if (slotError || !timeslot) {
-      return NextResponse.json(
-        { error: 'Invalid time slot' },
-        { status: 400 }
-      );
+      return errorResponse('Invalid time slot', 400);
     }
 
     // Update event with locked time
@@ -73,10 +53,7 @@ export async function POST(
 
     if (updateError) {
       console.error('Error locking time:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to lock time' },
-        { status: 500 }
-      );
+      return errorResponse('Failed to lock time', 500);
     }
 
     return NextResponse.json({
@@ -85,10 +62,7 @@ export async function POST(
     });
   } catch (error) {
     console.error('Error in POST /api/events/[id]/lock:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return errorResponse('Internal server error', 500);
   }
 }
 

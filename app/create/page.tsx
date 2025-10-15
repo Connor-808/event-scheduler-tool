@@ -413,7 +413,7 @@ export default function CreateEventPage() {
                             type="datetime-local"
                             value={fixedTime}
                             onChange={(e) => setFixedTime(e.target.value)}
-                            className="flex h-14 w-full rounded-lg border-2 border-foreground/20 bg-background pl-12 pr-4 py-2.5 text-base placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                            className="flex min-h-[56px] h-14 w-full rounded-lg border-2 border-foreground/20 bg-background pl-12 pr-4 py-2.5 text-base placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer touch-manipulation [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                           />
                         </div>
                       </div>
@@ -481,6 +481,13 @@ export default function CreateEventPage() {
 
               <div className="space-y-3">
                 <h2 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide">Quick Start</h2>
+                {/* Mobile: Horizontal scroll with gradient fade indicators */}
+                <div className="relative">
+                  {/* Left fade gradient - mobile only */}
+                  <div className="absolute left-0 top-0 bottom-2 w-8 bg-gradient-to-r from-background to-transparent pointer-events-none z-10 sm:hidden" />
+                  {/* Right fade gradient - mobile only */}
+                  <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none z-10 sm:hidden" />
+
                 <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
                   {/* Popular presets */}
                   <button
@@ -586,6 +593,7 @@ export default function CreateEventPage() {
                     <div className={`text-xs ${presetType === 'weekday' ? 'text-white/80' : 'text-foreground/60'}`}>Mon-Fri 7pm</div>
                   </button>
                 </div>
+                </div> {/* Close relative wrapper for gradient fades */}
               </div>
               </>
               )}
@@ -627,7 +635,7 @@ export default function CreateEventPage() {
                                 type="datetime-local"
                                 value={slot.start_time}
                                 onChange={(e) => updateTimeSlot(slot.id, 'start_time', e.target.value)}
-                                className="flex h-[48px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-11 pr-4 py-2.5 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                                className="flex min-h-[52px] h-[52px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-11 pr-4 py-2.5 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 cursor-pointer touch-manipulation [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                               />
                             </div>
                             
@@ -643,7 +651,7 @@ export default function CreateEventPage() {
                                 value={slot.label}
                                 onChange={(e) => updateTimeSlot(slot.id, 'label', e.target.value)}
                                 placeholder="Add a label (optional)"
-                                className="flex h-[48px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-11 pr-4 py-2.5 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200"
+                                className="flex min-h-[52px] h-[52px] w-full rounded-lg border-2 border-foreground/20 bg-background pl-11 pr-4 py-2.5 text-sm placeholder:text-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/20 focus:border-foreground hover:border-foreground/30 transition-colors duration-200 touch-manipulation"
                               />
                             </div>
                           </div>

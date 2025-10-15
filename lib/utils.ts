@@ -474,6 +474,29 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
 }
 
 /**
+ * Phone Number Utilities
+ */
+
+/**
+ * Format phone number to E.164 format (+1XXXXXXXXXX)
+ * Handles various US phone number formats
+ * @param phoneNumber - Phone number in any format (e.g., "(555) 123-4567", "555-123-4567")
+ * @returns Phone number in E.164 format (e.g., "+15551234567")
+ */
+export function formatPhoneE164(phoneNumber: string): string {
+  // Remove all non-digit characters
+  let formatted = phoneNumber.replace(/\D/g, '');
+
+  // Add country code if not present (assumes US)
+  if (!formatted.startsWith('1')) {
+    formatted = '1' + formatted;
+  }
+
+  // Add + prefix
+  return '+' + formatted;
+}
+
+/**
  * Validation Utilities
  */
 
@@ -506,6 +529,36 @@ export function validateLocation(location: string): { valid: boolean; error?: st
     return { valid: false, error: 'Location must be 200 characters or less' };
   }
   return { valid: true };
+}
+
+/**
+ * URL Utilities
+ */
+
+/**
+ * Generate shareable event URL
+ * Safe for SSR (returns empty string on server)
+ * @param eventId - The event ID
+ * @returns Full URL to the event page
+ */
+export function getEventShareUrl(eventId: string): string {
+  if (typeof window === 'undefined') return '';
+  return `${window.location.origin}/event/${eventId}`;
+}
+
+/**
+ * Copy text to clipboard
+ * @param text - Text to copy
+ * @returns Promise that resolves to true if successful
+ */
+export async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (error) {
+    console.error('Failed to copy:', error);
+    return false;
+  }
 }
 
 

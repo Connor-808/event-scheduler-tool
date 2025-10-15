@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { formatPhoneE164 } from './utils';
 
 /**
  * Auth utilities for Supabase Phone Authentication
@@ -17,11 +18,7 @@ export interface AuthUser {
 export async function sendPhoneOTP(phoneNumber: string): Promise<{ success: boolean; error?: string }> {
   try {
     // Format phone number to E.164 format (+1XXXXXXXXXX)
-    let formattedPhone = phoneNumber.replace(/\D/g, '');
-    if (!formattedPhone.startsWith('1')) {
-      formattedPhone = '1' + formattedPhone;
-    }
-    formattedPhone = '+' + formattedPhone;
+    const formattedPhone = formatPhoneE164(phoneNumber);
 
     const { error } = await supabase.auth.signInWithOtp({
       phone: formattedPhone,
@@ -51,11 +48,7 @@ export async function verifyPhoneOTP(
 ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
   try {
     // Format phone number to E.164 format
-    let formattedPhone = phoneNumber.replace(/\D/g, '');
-    if (!formattedPhone.startsWith('1')) {
-      formattedPhone = '1' + formattedPhone;
-    }
-    formattedPhone = '+' + formattedPhone;
+    const formattedPhone = formatPhoneE164(phoneNumber);
 
     const { data, error } = await supabase.auth.verifyOtp({
       phone: formattedPhone,
