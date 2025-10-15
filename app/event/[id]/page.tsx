@@ -446,56 +446,58 @@ export default function EventVotingPage() {
 
   return (
     <div className={`min-h-screen ${event && event.time_slots.length === 1 ? 'pb-40' : 'pb-32'} sm:pb-12`}>
-      <div className="py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           {/* Hero Image or Gradient Placeholder */}
           {event?.hero_image_url ? (
-            <div className="mb-6 sm:mb-8 rounded-xl overflow-hidden shadow-lg">
+            <div className="mb-6 rounded-2xl overflow-hidden">
               <img 
                 src={event.hero_image_url} 
                 alt={event.title} 
-                className="w-full h-48 sm:h-64 object-cover"
+                className="w-full h-64 sm:h-80 object-cover"
               />
             </div>
           ) : (
-            <div className="mb-6 sm:mb-8 rounded-xl overflow-hidden shadow-lg h-48 sm:h-64 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-60">
+            <div className="mb-6 rounded-2xl overflow-hidden h-64 sm:h-80 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-60">
             </div>
           )}
 
-          {/* Event Header */}
-          <Card className="mb-6 sm:mb-8">
-            <CardHeader>
-              <CardTitle>{event?.title}</CardTitle>
-              {event?.location && <CardDescription>📍 {event.location}</CardDescription>}
-              {hasVoted && (
-                <div className="pt-3">
-                  <span className="inline-block px-3 py-1.5 text-xs font-semibold bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 rounded-full">
-                    ✓ You voted {event?.participants.find(p => p.cookie_id === cookieId)?.last_active ? new Date(event.participants.find(p => p.cookie_id === cookieId)!.last_active).toLocaleTimeString() : ''}
-                  </span>
-                </div>
-              )}
-            </CardHeader>
-          </Card>
+          {/* Event Title & Location - Outside Card */}
+          <div className="mb-8">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 leading-tight">
+              {event?.title}
+            </h1>
+            {event?.location && (
+              <div className="flex items-start gap-2 text-foreground/80">
+                <svg className="w-5 h-5 mt-0.5 flex-shrink-0 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                <span className="text-base sm:text-lg">{event.location}</span>
+              </div>
+            )}
+            {hasVoted && (
+              <div className="mt-4">
+                <span className="inline-block px-3 py-1.5 text-xs font-semibold bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 rounded-full">
+                  ✓ You voted {event?.participants.find(p => p.cookie_id === cookieId)?.last_active ? new Date(event.participants.find(p => p.cookie_id === cookieId)!.last_active).toLocaleTimeString() : ''}
+                </span>
+              </div>
+            )}
+          </div>
 
           {/* Single Time Slot - RSVP Mode */}
           {event && event.time_slots.length === 1 ? (
             <>
-              {/* Event Time Display */}
-              <div className="text-center mb-8">
-                <h2 className="text-xl sm:text-2xl font-bold mb-4 text-foreground/80">You&apos;re invited to:</h2>
-                <Card className="p-6 mb-8 bg-gradient-to-br from-blue-50/50 to-purple-50/30 dark:from-blue-950/20 dark:to-purple-950/10 border-2">
-                  <div className="text-center">
-                    <div className="text-2xl sm:text-3xl font-bold mb-2">
-                      {formatDateTime(event.time_slots[0].start_time)}
-                    </div>
-                    {event.time_slots[0].label && (
-                      <div className="text-lg text-foreground/70">{event.time_slots[0].label}</div>
-                    )}
-                  </div>
-                </Card>
-                <h3 className="text-xl sm:text-2xl font-bold mb-2">Can you make it?</h3>
-                <p className="text-base text-foreground/70">
-                  {hasVoted ? 'You can change your response anytime' : 'Let the organizer know if you can attend'}
+              {/* RSVP Prompt */}
+              <div className="text-center mb-6 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-3 leading-tight">Can you make it?</h2>
+                <div className="text-lg sm:text-xl text-foreground/90 font-semibold mb-2">
+                  {formatDateTime(event.time_slots[0].start_time)}
+                </div>
+                {event.time_slots[0].label && (
+                  <div className="text-base text-foreground/70 mb-3">{event.time_slots[0].label}</div>
+                )}
+                <p className="text-base sm:text-lg text-foreground/70">
+                  {hasVoted ? 'You can change your response anytime' : 'Let us know if you can attend'}
                 </p>
               </div>
             </>
