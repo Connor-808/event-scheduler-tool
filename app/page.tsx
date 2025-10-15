@@ -17,7 +17,34 @@ export default function Home() {
       {/* Header */}
       <header className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="text-xl sm:text-2xl font-bold">Friendr.io</div>
+          <div className="flex items-center gap-2">
+            {/* Logo Icon */}
+            <div className="relative w-8 h-8 sm:w-9 sm:h-9">
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-md flex items-center justify-center">
+                {/* Calendar header dots */}
+                <div className="absolute top-1.5 left-0 right-0 flex justify-center gap-1">
+                  <div className="w-1 h-1 rounded-full bg-white/60"></div>
+                  <div className="w-1 h-1 rounded-full bg-white/60"></div>
+                </div>
+                {/* Checkmark */}
+                <svg 
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-white mt-0.5" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  strokeWidth={3}
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    d="M5 13l4 4L19 7" 
+                  />
+                </svg>
+              </div>
+            </div>
+            {/* Text */}
+            <div className="text-xl sm:text-2xl font-bold tracking-tight">friendr.io</div>
+          </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <ThemeToggle />
             <Link href="/dashboard">
