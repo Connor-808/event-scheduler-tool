@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { getUserCookieId } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import type { Event } from '@/lib/supabase';
 
 export default function DashboardPage() {
@@ -103,7 +104,8 @@ export default function DashboardPage() {
               Events you&apos;ve organized
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
             <Link href="/">
               <Button size="md" variant="secondary">
                 Home

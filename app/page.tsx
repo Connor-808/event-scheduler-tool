@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { getUserCookieId } from '@/lib/utils';
 
 export default function Home() {
@@ -17,11 +18,14 @@ export default function Home() {
       <header className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="text-xl sm:text-2xl font-bold">MUUVS</div>
-          <Link href="/dashboard">
-            <Button size="sm" variant="secondary">
-              My Events
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <ThemeToggle />
+            <Link href="/dashboard">
+              <Button size="sm" variant="secondary">
+                My Events
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
