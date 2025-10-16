@@ -308,60 +308,75 @@ export default function DashboardPage() {
         {/* All Time Slots */}
         <Card>
           <CardHeader>
-            <CardTitle>All Time Slots</CardTitle>
-            <CardDescription>Vote breakdown for each proposed time</CardDescription>
+            <CardTitle className="text-sm font-semibold text-foreground/60 uppercase tracking-wider">All Times</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4 sm:space-y-5">
-              {timeSlots.map((slot, index) => (
-                <div
-                  key={slot.timeslot_id}
-                  className={`p-4 sm:p-5 rounded-xl border-2 transition-all ${
-                    index === 0 ? 'border-green-600/30 bg-green-600/5' : 'border-foreground/10 hover:border-foreground/20'
-                  }`}
-                >
-                  <div className="flex flex-col sm:flex-row items-start justify-between gap-3 mb-4">
-                    <div className="flex-1">
-                      <div className="font-bold text-base sm:text-lg">{formatDateTime(slot.start_time)}</div>
-                      {slot.label && (
-                        <div className="text-sm sm:text-base text-foreground/70 mt-1">{slot.label}</div>
-                      )}
+            <div className="space-y-6">
+              {timeSlots.map((slot, index) => {
+                const availableVotes = slot.votes.filter(v => v.availability === 'available');
+                const availableNames = availableVotes
+                  .map(v => {
+                    const participant = event?.participants.find(p => p.cookie_id === v.cookie_id);
+                    return participant?.display_name || 'Anonymous';
+                  })
+                  .join(', ');
+
+                return (
+                  <div key={slot.timeslot_id} className="space-y-3">
+                    {/* Time and Count */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-baseline gap-3">
+                        <h3 className="text-2xl sm:text-3xl font-bold">
+                          {new Date(slot.start_time).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          })}
+                        </h3>
+                        {index === 0 && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleLockClick(slot)}
+                            className="text-xs"
+                          >
+                            Lock In
+                          </Button>
+                        )}
+                      </div>
+                      <span className="text-xl sm:text-2xl text-foreground/40 font-medium">
+                        {slot.available_count}/{slot.votes.length}
+                      </span>
                     </div>
-                    {index !== 0 && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleLockClick(slot)}
-                        className="min-h-[48px] w-full sm:w-auto"
-                      >
-                        Select This Time
-                      </Button>
+
+                    {/* Progress Bar */}
+                    {slot.votes.length > 0 && (
+                      <div className="h-2 rounded-full overflow-hidden bg-foreground/10">
+                        {slot.available_count > 0 && (
+                          <div
+                            className="h-full bg-foreground rounded-full transition-all"
+                            style={{
+                              width: `${(slot.available_count / slot.votes.length) * 100}%`,
+                            }}
+                          />
+                        )}
+                      </div>
+                    )}
+
+                    {/* Names of people who voted available */}
+                    {availableNames && (
+                      <p className="text-sm text-foreground/60">
+                        {availableNames}
+                      </p>
+                    )}
+
+                    {/* Show label if exists */}
+                    {slot.label && (
+                      <p className="text-sm text-foreground/50 italic">{slot.label}</p>
                     )}
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3 text-center text-sm sm:text-base mb-3">
-                    <div className="font-semibold text-green-600">
-                      ✓ {slot.available_count} available
-                    </div>
-                    <div className="font-medium text-foreground/70">
-                      ✗ {slot.unavailable_count} not available
-                    </div>
-                  </div>
-
-                  {slot.votes.length > 0 && (
-                    <div className="h-3 rounded-full overflow-hidden flex bg-foreground/10">
-                      {slot.available_count > 0 && (
-                        <div
-                          className="bg-green-600 transition-all"
-                          style={{
-                            width: `${(slot.available_count / slot.votes.length) * 100}%`,
-                          }}
-                        />
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
