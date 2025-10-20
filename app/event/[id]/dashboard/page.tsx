@@ -269,47 +269,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Response Overview */}
-        <Card className="mb-6 sm:mb-8">
-          <CardHeader>
-            <CardTitle>Response Overview</CardTitle>
-            <CardDescription>
-              {participantCount} {participantCount === 1 ? 'person has' : 'people have'} responded
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {participantCount > 0 ? (
-              <div className="space-y-2 sm:space-y-3">
-                {event?.participants.map((participant) => (
-                  <div
-                    key={participant.cookie_id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-3 sm:py-2 border-b border-foreground/10 last:border-0"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-base">
-                        {participant.display_name || 'Anonymous'}
-                      </span>
-                      {participant.is_organizer && (
-                        <span className="text-xs font-bold bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 px-2 py-1 rounded-md">
-                          Organizer
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-sm text-foreground/70">
-                      {getRelativeTime(participant.last_active)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-10 sm:py-12 text-foreground/70">
-                <p className="text-base font-medium">No responses yet</p>
-                <p className="text-sm mt-2">Share your event link to get responses</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Event Type Specific Display */}
         {isFixedTimeEvent ? (
           /* Fixed Time Event - RSVP Responses */
@@ -586,6 +545,47 @@ export default function DashboardPage() {
                 })}
                 </div>
               )
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Response Overview */}
+        <Card className="mb-6 sm:mb-8">
+          <CardHeader>
+            <CardTitle>Response Overview</CardTitle>
+            <CardDescription>
+              {participantCount} {participantCount === 1 ? 'person has' : 'people have'} responded
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {participantCount > 0 ? (
+              <div className="space-y-2 sm:space-y-3">
+                {event?.participants.map((participant) => (
+                  <div
+                    key={participant.cookie_id}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-3 sm:py-2 border-b border-foreground/10 last:border-0"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-base">
+                        {participant.display_name || 'Anonymous'}
+                      </span>
+                      {participant.is_organizer && (
+                        <span className="text-xs font-bold bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400 px-2 py-1 rounded-md">
+                          Organizer
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-sm text-foreground/70">
+                      {getRelativeTime(participant.last_active)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10 sm:py-12 text-foreground/70">
+                <p className="text-base font-medium">No responses yet</p>
+                <p className="text-sm mt-2">Share your event link to get responses</p>
+              </div>
             )}
           </CardContent>
         </Card>
