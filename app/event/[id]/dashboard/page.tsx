@@ -55,21 +55,46 @@ export default function DashboardPage() {
 
       setEvent(eventData);
 
-      // Load vote breakdown
-      const breakdown = await getVoteBreakdown(eventId);
-      
-      // If no votes yet, show all timeslots with zero counts
-      if (breakdown.length === 0 && eventData.time_slots.length > 0) {
-        const emptySlots = eventData.time_slots.map(slot => ({
-          ...slot,
-          votes: [],
-          available_count: 0,
-          maybe_count: 0,
-          unavailable_count: 0,
-        }));
-        setTimeSlots(emptySlots);
+      // Load vote breakdown - handle fixed time events differently
+      if (eventData.time_slots.length === 1) {
+        // Fixed time event - directly fetch votes for the single timeslot
+        const singleSlot = eventData.time_slots[0];
+        
+        const { data: votes } = await supabase
+          .from('votes')
+          .select('*')
+          .eq('timeslot_id', singleSlot.timeslot_id);
+        
+        const availableCount = votes?.filter(v => v.availability === 'available').length || 0;
+        const unavailableCount = votes?.filter(v => v.availability === 'unavailable').length || 0;
+        const maybeCount = votes?.filter(v => v.availability === 'maybe').length || 0;
+        
+        const fixedTimeSlot: TimeSlotWithVotes = {
+          ...singleSlot,
+          votes: votes || [],
+          available_count: availableCount,
+          maybe_count: maybeCount,
+          unavailable_count: unavailableCount,
+        };
+        
+        setTimeSlots([fixedTimeSlot]);
       } else {
-        setTimeSlots(breakdown);
+        // Multi-time event - use the existing breakdown function
+        const breakdown = await getVoteBreakdown(eventId);
+        
+        // If no votes yet, show all timeslots with zero counts
+        if (breakdown.length === 0 && eventData.time_slots.length > 0) {
+          const emptySlots = eventData.time_slots.map(slot => ({
+            ...slot,
+            votes: [],
+            available_count: 0,
+            maybe_count: 0,
+            unavailable_count: 0,
+          }));
+          setTimeSlots(emptySlots);
+        } else {
+          setTimeSlots(breakdown);
+        }
       }
 
       setIsLoading(false);
@@ -94,8 +119,32 @@ export default function DashboardPage() {
             // Debounce rapid vote changes (1 second delay)
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(async () => {
-              const newBreakdown = await getVoteBreakdown(eventId);
-              setTimeSlots(newBreakdown);
+              if (eventData.time_slots.length === 1) {
+                // Fixed time event - refresh votes directly
+                const singleSlot = eventData.time_slots[0];
+                const { data: votes } = await supabase
+                  .from('votes')
+                  .select('*')
+                  .eq('timeslot_id', singleSlot.timeslot_id);
+                
+                const availableCount = votes?.filter(v => v.availability === 'available').length || 0;
+                const unavailableCount = votes?.filter(v => v.availability === 'unavailable').length || 0;
+                const maybeCount = votes?.filter(v => v.availability === 'maybe').length || 0;
+                
+                const fixedTimeSlot: TimeSlotWithVotes = {
+                  ...singleSlot,
+                  votes: votes || [],
+                  available_count: availableCount,
+                  maybe_count: maybeCount,
+                  unavailable_count: unavailableCount,
+                };
+                
+                setTimeSlots([fixedTimeSlot]);
+              } else {
+                // Multi-time event - use breakdown function
+                const newBreakdown = await getVoteBreakdown(eventId);
+                setTimeSlots(newBreakdown);
+              }
             }, 1000);
           }
         )
