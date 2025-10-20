@@ -397,14 +397,19 @@ export default function EventPage() {
             {isOrganizer && (
               <Link href={`/event/${eventId}/dashboard`} className="flex-1">
                 <Button className="w-full" variant="default">
-                  View Dashboard
+                  View Event Dashboard
                 </Button>
               </Link>
             )}
+            <Link href="/dashboard" className="flex-1">
+              <Button className="w-full" variant="default">
+                My Events
+              </Button>
+            </Link>
             <Button
               onClick={() => setShowConfirmation(false)}
               variant="secondary"
-              className={isOrganizer ? 'flex-1' : 'w-full'}
+              className="flex-1"
             >
               {hasResponded ? 'Change Response' : 'Go Back'}
             </Button>
