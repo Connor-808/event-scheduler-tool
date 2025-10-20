@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { PhoneVerification } from '@/components/PhoneVerification';
 import { getEventWithDetails, EventWithDetails, Vote, supabase } from '@/lib/supabase';
-import { getUserCookieId, formatDateTime } from '@/lib/utils';
+import { getUserCookieId, formatDateTime, openCalendar, CalendarEvent } from '@/lib/utils';
 
 interface VoteState {
   [timeslotId: string]: boolean; // true = available, false/undefined = not selected
@@ -235,11 +235,36 @@ export default function EventVotingPage() {
                   <div className="text-center py-4">
                     <p className="text-sm font-medium text-foreground/60 mb-3">Your response:</p>
                     {votes[event.time_slots[0].timeslot_id] ? (
-                      <div className="flex items-center justify-center gap-2 text-green-600">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        <span className="font-bold text-lg">I&apos;m in - I can attend</span>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-center gap-2 text-green-600">
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="font-bold text-lg">I&apos;m in - I can attend</span>
+                        </div>
+                        
+                        {/* Add to Calendar Button */}
+                        <div className="pt-2">
+                          <Button
+                            onClick={() => {
+                              const calendarEvent: CalendarEvent = {
+                                title: event.title,
+                                start: new Date(event.time_slots[0].start_time),
+                                location: event.location || '',
+                                description: event.notes || '',
+                              };
+                              
+                              openCalendar(calendarEvent, 'google');
+                            }}
+                            variant="secondary"
+                            className="w-full"
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Add to Calendar
+                          </Button>
+                        </div>
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-2 text-red-600">

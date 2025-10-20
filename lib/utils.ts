@@ -561,4 +561,65 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
+/**
+ * Calendar integration utilities
+ */
+
+export interface CalendarEvent {
+  title: string;
+  start: Date;
+  end?: Date;
+  location?: string;
+  description?: string;
+}
+
+export function generateCalendarUrls(event: CalendarEvent) {
+  const startDate = event.start.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const endDate = (event.end || new Date(event.start.getTime() + 60 * 60 * 1000)).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  
+  return {
+    google: `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(event.description || '')}&location=${encodeURIComponent(event.location || '')}`,
+    outlook: `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(event.title)}&startdt=${startDate}&enddt=${endDate}&body=${encodeURIComponent(event.description || '')}&location=${encodeURIComponent(event.location || '')}`,
+    yahoo: `https://calendar.yahoo.com/?v=60&view=d&type=20&title=${encodeURIComponent(event.title)}&st=${startDate}&et=${endDate}&desc=${encodeURIComponent(event.description || '')}&in_loc=${encodeURIComponent(event.location || '')}`,
+    ics: generateICSFile(event)
+  };
+}
+
+export function generateICSFile(event: CalendarEvent): string {
+  const startDate = event.start.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const endDate = (event.end || new Date(event.start.getTime() + 60 * 60 * 1000)).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  
+  const icsContent = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Event Scheduler//EN',
+    'BEGIN:VEVENT',
+    `DTSTART:${startDate}`,
+    `DTEND:${endDate}`,
+    `SUMMARY:${event.title}`,
+    event.location ? `LOCATION:${event.location}` : '',
+    event.description ? `DESCRIPTION:${event.description}` : '',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].filter(line => line).join('\r\n');
+  
+  return `data:text/calendar;charset=utf8,${encodeURIComponent(icsContent)}`;
+}
+
+export function openCalendar(event: CalendarEvent, provider: 'google' | 'outlook' | 'yahoo' | 'ics' = 'google') {
+  const urls = generateCalendarUrls(event);
+  
+  if (provider === 'ics') {
+    // Download ICS file
+    const link = document.createElement('a');
+    link.href = urls.ics;
+    link.download = `${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    window.open(urls[provider], '_blank');
+  }
+}
+
 
