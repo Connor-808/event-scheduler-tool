@@ -430,7 +430,49 @@ export default function EventPage() {
 
         {/* Event Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 leading-tight">{event.title}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight">{event.title}</h1>
+          
+          {/* Fixed Time Display - Prominent */}
+          {isFixedTimeEvent(event) && event.fixed_datetime && (
+            <div className="mb-4 p-5 sm:p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 rounded-xl border-2 border-blue-600/40 shadow-sm">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-600 flex items-center justify-center">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs sm:text-sm font-semibold text-blue-900 dark:text-blue-300 uppercase tracking-wide mb-1">
+                    Event Time
+                  </div>
+                  <div className="text-xl sm:text-2xl font-bold text-blue-950 dark:text-blue-50 leading-tight">
+                    {formatDateTime(event.fixed_datetime)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Polled Time Display - Prominent */}
+          {isPolledTimeEvent(event) && event.time_slots.length > 0 && (
+            <div className="mb-4 p-5 sm:p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/20 rounded-xl border-2 border-purple-600/40 shadow-sm">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-600 flex items-center justify-center">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs sm:text-sm font-semibold text-purple-900 dark:text-purple-300 uppercase tracking-wide mb-1">
+                    Time Options
+                  </div>
+                  <div className="text-lg sm:text-xl font-bold text-purple-950 dark:text-purple-50 leading-tight">
+                    {event.time_slots.length} {event.time_slots.length === 1 ? 'time' : 'times'} to choose from
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           
           {event.location && (
             <div className="flex items-start gap-2 text-base sm:text-lg text-foreground/70 mb-2">
@@ -481,25 +523,11 @@ export default function EventPage() {
         {isFixedTimeEvent(event) && event.fixed_datetime && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle className="text-xl">Event Time</CardTitle>
-              <CardDescription>Can you make it?</CardDescription>
+              <CardTitle className="text-xl">Can you make it?</CardTitle>
+              <CardDescription>Let the organizer know if you'll be there</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Show Event Time */}
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-600/30">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <div>
-                      <div className="font-semibold text-blue-900 dark:text-blue-100">
-                        {formatDateTime(event.fixed_datetime)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 {/* RSVP Buttons */}
                 <div className="space-y-3">
                   <p className="text-sm font-medium text-foreground/70">Your response:</p>
