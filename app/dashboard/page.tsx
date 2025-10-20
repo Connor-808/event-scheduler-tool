@@ -172,7 +172,7 @@ export default function DashboardPage() {
                   : 'text-foreground/60 hover:text-foreground/80'
               }`}
             >
-              My Events
+              Organized Events
               {createdEvents.length > 0 && (
                 <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
                   activeTab === 'created'
@@ -191,7 +191,7 @@ export default function DashboardPage() {
                   : 'text-foreground/60 hover:text-foreground/80'
               }`}
             >
-              Invitations
+              My Invites
               {invitedEvents.length > 0 && (
                 <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
                   activeTab === 'invited'
@@ -286,13 +286,25 @@ export default function DashboardPage() {
                               <h3 className="font-bold text-lg leading-tight flex-1">
                                 {event.title}
                               </h3>
-                              <span
-                                className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusBadge(
-                                  event.status
-                                )}`}
-                              >
-                                {event.status}
-                              </span>
+                              <div className="flex gap-1.5">
+                                <span
+                                  className={`px-2 py-1 rounded-md text-xs font-medium border ${
+                                    event.event_type === 'fixed'
+                                      ? 'bg-purple-600/10 text-purple-600 border-purple-600/30'
+                                      : 'bg-blue-600/10 text-blue-600 border-blue-600/30'
+                                  }`}
+                                  title={event.event_type === 'fixed' ? 'Fixed Time' : 'Find a Time'}
+                                >
+                                  {event.event_type === 'fixed' ? 'Fixed' : 'Poll'}
+                                </span>
+                                <span
+                                  className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusBadge(
+                                    event.status
+                                  )}`}
+                                >
+                                  {event.status}
+                                </span>
+                              </div>
                             </div>
                             
                             {event.location && (
@@ -376,13 +388,25 @@ export default function DashboardPage() {
                               <h3 className="font-bold text-lg leading-tight flex-1">
                                 {event.title}
                               </h3>
-                              <span
-                                className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusBadge(
-                                  event.status
-                                )}`}
-                              >
-                                {event.status}
-                              </span>
+                              <div className="flex gap-1.5">
+                                <span
+                                  className={`px-2 py-1 rounded-md text-xs font-medium border ${
+                                    event.event_type === 'fixed'
+                                      ? 'bg-purple-600/10 text-purple-600 border-purple-600/30'
+                                      : 'bg-blue-600/10 text-blue-600 border-blue-600/30'
+                                  }`}
+                                  title={event.event_type === 'fixed' ? 'Fixed Time' : 'Find a Time'}
+                                >
+                                  {event.event_type === 'fixed' ? 'Fixed' : 'Poll'}
+                                </span>
+                                <span
+                                  className={`px-2 py-1 rounded-md text-xs font-medium border ${getStatusBadge(
+                                    event.status
+                                  )}`}
+                                >
+                                  {event.status}
+                                </span>
+                              </div>
                             </div>
                             
                             {event.location && (

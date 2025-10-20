@@ -34,8 +34,8 @@ export default function CreateEventPage() {
   const [step, setStep] = useState<Step>('event-details');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Event Type State
-  const [eventType, setEventType] = useState<'poll' | 'fixed'>('fixed');
+  // Event Type State ('fixed' = Fixed Time, 'polled' = Find a Time)
+  const [eventType, setEventType] = useState<'fixed' | 'polled'>('fixed');
 
   // Time Selection State
   const [presetType, setPresetType] = useState<'this-weekend' | 'next-weekend' | 'weekday' | 'weekend-warrior' | 'coffee-catchup' | 'lazy-sunday' | 'unemployed-friend' | 'chill-evenings' | null>(null);
@@ -156,8 +156,8 @@ export default function CreateEventPage() {
       newErrors.location = locationValidation.error!;
     }
 
-    if (notes.length > 500) {
-      newErrors.notes = 'Notes must be 500 characters or less';
+    if (notes.length > 1000) {
+      newErrors.notes = 'Notes must be 1000 characters or less';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -178,10 +178,16 @@ export default function CreateEventPage() {
       return true;
     }
     
+    // For 'polled' events, require 2-10 time options
     const filledSlots = timeSlots.filter((slot) => slot.start_time);
     
     if (filledSlots.length < 2) {
-      alert('Please select a preset or add at least 2 time slots');
+      alert('Please add at least 2 time options for voting');
+      return false;
+    }
+    
+    if (filledSlots.length > 10) {
+      alert('Maximum 10 time options allowed');
       return false;
     }
 
@@ -224,33 +230,37 @@ export default function CreateEventPage() {
         }
       }
 
-      // Prepare time slots based on event type
-      const timeSlotsForSubmission = eventType === 'fixed'
-        ? [{
-            start_time: new Date(fixedTime),
-            label: 'Event Time',
-          }]
-        : timeSlots
-        .filter((slot) => slot.start_time)
-        .map((slot) => ({
-          start_time: new Date(slot.start_time),
-          label: slot.label || '',
-        }));
-
       const cookieId = getUserCookieId();
+
+      // Prepare payload based on event type
+      const payload: Record<string, unknown> = {
+        title,
+        location: location || null,
+        notes: notes || null,
+        heroImageUrl,
+        cookieId,
+        eventType, // 'fixed' or 'polled'
+      };
+
+      // Add time data based on type
+      if (eventType === 'fixed') {
+        // Fixed Time: single datetime
+        payload.fixedDatetime = new Date(fixedTime).toISOString();
+      } else {
+        // Polled Time: multiple time options
+        payload.timeSlots = timeSlots
+          .filter((slot) => slot.start_time)
+          .map((slot) => ({
+            start_time: new Date(slot.start_time),
+            label: slot.label || '',
+          }));
+      }
 
       // Create event via API
       const response = await fetch('/api/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title,
-          location: location || null,
-          notes: notes || null,
-          heroImageUrl,
-          timeSlots: timeSlotsForSubmission,
-          cookieId,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -259,7 +269,7 @@ export default function CreateEventPage() {
 
       const data = await response.json();
 
-      // Navigate to share screen
+      // Navigate to final card screen (summary + share)
       router.push(`/event/${data.eventId}/share`);
     } catch (error) {
       console.error('Error creating event:', error);
@@ -367,8 +377,8 @@ export default function CreateEventPage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     error={errors.notes}
-                    maxLength={500}
-                    helperText={`Optional - ${notes.length}/500 characters`}
+                    maxLength={1000}
+                    helperText={`Optional - ${notes.length}/1000 characters`}
                   />
                 </div>
               </Card>
@@ -380,7 +390,7 @@ export default function CreateEventPage() {
               <div className="text-center space-y-3">
                 <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When should we meet?</h1>
                 <p className="text-base sm:text-lg text-foreground/70">
-                  {eventType === 'poll' ? 'Select times for friends to vote on' : 'Set a time for your event'}
+                  {eventType === 'polled' ? 'Select times for friends to vote on' : 'Set a time for your event'}
                 </p>
               </div>
 
@@ -410,9 +420,9 @@ export default function CreateEventPage() {
                     </div>
                   </Card>
 
-                  {/* Option to switch to poll mode */}
+                  {/* Option to switch to polled mode */}
                   <button
-                    onClick={() => setEventType('poll')}
+                    onClick={() => setEventType('polled')}
                     className="w-full group"
                   >
                     <Card className="hover:border-blue-600/50 transition-all duration-200 cursor-pointer">
@@ -439,8 +449,8 @@ export default function CreateEventPage() {
                 </>
               )}
 
-              {/* Poll Times - Quick Presets */}
-              {eventType === 'poll' && (
+              {/* Polled Times - Quick Presets */}
+              {eventType === 'polled' && (
               <>
                 {/* Option to switch back to fixed time */}
                 <button
@@ -588,8 +598,8 @@ export default function CreateEventPage() {
               </>
               )}
 
-              {/* Time Slots Display - Poll Only */}
-              {eventType === 'poll' && (
+              {/* Time Slots Display - Polled Only */}
+              {eventType === 'polled' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-foreground/60 uppercase tracking-wide">Your Schedule</h2>
@@ -691,8 +701,8 @@ export default function CreateEventPage() {
             </button>
           ) : (
             <div className="space-y-3">
-              {/* Add Time Slot button - only show for poll events if under limit */}
-              {eventType === 'poll' && timeSlots.length < 10 && (
+              {/* Add Time Slot button - only show for polled events if under limit */}
+              {eventType === 'polled' && timeSlots.length < 10 && (
                 <Button 
                   variant="secondary" 
                   onClick={addCustomSlot} 

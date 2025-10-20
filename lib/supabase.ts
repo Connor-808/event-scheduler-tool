@@ -13,7 +13,12 @@ export const supabaseAdmin = typeof window === 'undefined'
   ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY!)
   : supabase; // Fallback to regular client if somehow called on client-side
 
-// TypeScript Types based on SCHEMA.md
+// TypeScript Types based on SCHEMA.md + friends.io PRD
+
+/**
+ * Event Type - distinguishes between fixed time and polled events
+ */
+export type EventType = 'fixed' | 'polled';
 
 /**
  * Event entity - represents a schedulable event
@@ -26,7 +31,11 @@ export interface Event {
   notes: string | null; // Optional additional notes
   hero_image_url: string | null; // Optional hero/banner image URL
   organizer_user_id: string | null; // Foreign key to auth.users for authenticated organizers
-  locked_time_id: string | null; // Foreign key to TimeSlot when locked
+  event_type: EventType; // Type: 'fixed' (single time) or 'polled' (multiple options)
+  fixed_datetime: string | null; // For fixed events: the confirmed date/time (ISO timestamp)
+  locked_time_id: string | null; // For polled events: FK to TimeSlot when locked
+  locked_at: string | null; // When a polled event was locked
+  locked_by_cookie_id: string | null; // Who locked the event
   status: 'active' | 'locked' | 'cancelled'; // Event status
   created_at: string; // ISO timestamp
   ttl: string | null; // Time-to-live for automatic cleanup
@@ -57,13 +66,27 @@ export interface UserCookie {
 }
 
 /**
- * Vote entity - records participant availability for time slots
+ * Vote entity - records participant availability for time slots (polled events)
  */
 export interface Vote {
   vote_id: string; // UUID primary key
   timeslot_id: string; // Foreign key to TimeSlot
   cookie_id: string; // Foreign key to UserCookie
+  event_id: string; // Foreign key to Event
   availability: 'available' | 'maybe' | 'unavailable'; // User's availability
+  created_at: string; // ISO timestamp
+  updated_at: string; // ISO timestamp
+}
+
+/**
+ * RSVP entity - records responses for fixed-time events
+ */
+export interface RSVP {
+  rsvp_id: string; // UUID primary key
+  event_id: string; // Foreign key to Event
+  cookie_id: string; // Foreign key to UserCookie
+  user_name: string | null; // Optional display name
+  response: 'yes' | 'no' | 'maybe'; // RSVP response
   created_at: string; // ISO timestamp
   updated_at: string; // ISO timestamp
 }
@@ -83,14 +106,34 @@ export interface EventWithDetails extends Event {
   time_slots: TimeSlot[];
   participants: UserCookie[];
   locked_time?: TimeSlot;
+  rsvps?: RSVP[]; // For fixed-time events
 }
 
 /**
- * Type for vote submission
+ * RSVP breakdown for dashboard tracking
+ */
+export interface RSVPBreakdown {
+  response: 'yes' | 'no' | 'maybe';
+  count: number;
+  user_names: string[];
+}
+
+/**
+ * Type for vote submission (polled events)
  */
 export interface VoteSubmission {
   timeslot_id: string;
   availability: 'available' | 'maybe' | 'unavailable';
+}
+
+/**
+ * Type for RSVP submission (fixed events)
+ */
+export interface RSVPSubmission {
+  event_id: string;
+  cookie_id: string;
+  user_name?: string;
+  response: 'yes' | 'no' | 'maybe';
 }
 
 /**
@@ -249,5 +292,211 @@ export async function eventExists(eventId: string): Promise<boolean> {
     .single();
 
   return !error && !!data;
+}
+
+/**
+ * ============================================================================
+ * RSVP HELPER FUNCTIONS (for fixed-time events)
+ * ============================================================================
+ */
+
+/**
+ * Get RSVP breakdown for a fixed-time event
+ * Returns counts and names grouped by response type
+ */
+export async function getRSVPBreakdown(eventId: string): Promise<RSVPBreakdown[]> {
+  const { data, error } = await supabase.rpc('get_rsvp_breakdown', {
+    p_event_id: eventId,
+  });
+
+  if (error) {
+    console.error('Error fetching RSVP breakdown:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+/**
+ * Get all RSVPs for an event
+ */
+export async function getRSVPs(eventId: string): Promise<RSVP[]> {
+  const { data, error } = await supabase
+    .from('rsvps')
+    .select('*')
+    .eq('event_id', eventId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching RSVPs:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+/**
+ * Get RSVP count for an event
+ */
+export async function getRSVPCount(eventId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('get_rsvp_count', {
+    p_event_id: eventId,
+  });
+
+  if (error) {
+    console.error('Error fetching RSVP count:', error);
+    return 0;
+  }
+
+  return data || 0;
+}
+
+/**
+ * Check if user has RSVP'd to an event
+ */
+export async function hasUserRSVPd(eventId: string, cookieId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('has_user_rsvpd', {
+    p_event_id: eventId,
+    p_cookie_id: cookieId,
+  });
+
+  if (error) {
+    console.error('Error checking user RSVP:', error);
+    return false;
+  }
+
+  return data || false;
+}
+
+/**
+ * Get user's RSVP for an event
+ */
+export async function getUserRSVP(eventId: string, cookieId: string): Promise<RSVP | null> {
+  const { data, error } = await supabase
+    .from('rsvps')
+    .select('*')
+    .eq('event_id', eventId)
+    .eq('cookie_id', cookieId)
+    .single();
+
+  if (error || !data) return null;
+  
+  return data;
+}
+
+/**
+ * Upsert RSVP (insert or update)
+ */
+export async function upsertRSVP(
+  submission: RSVPSubmission
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { error } = await supabase.from('rsvps').upsert(
+      {
+        event_id: submission.event_id,
+        cookie_id: submission.cookie_id,
+        user_name: submission.user_name || null,
+        response: submission.response,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'cookie_id,event_id',
+      }
+    );
+
+    if (error) {
+      console.error('Error upserting RSVP:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * ============================================================================
+ * EVENT TYPE HELPER FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Check if event is a fixed-time event
+ */
+export function isFixedTimeEvent(event: Event): boolean {
+  return event.event_type === 'fixed';
+}
+
+/**
+ * Check if event is a polled-time event
+ */
+export function isPolledTimeEvent(event: Event): boolean {
+  return event.event_type === 'polled';
+}
+
+/**
+ * Check if polled event has been locked
+ */
+export function isEventLocked(event: Event): boolean {
+  return event.status === 'locked' && event.locked_at !== null;
+}
+
+/**
+ * Get events by organizer (for dashboard "Organized Events" tab)
+ */
+export async function getOrganizedEvents(cookieId: string): Promise<Event[]> {
+  // Get events where user is marked as organizer in user_cookies
+  const { data: userCookies } = await supabase
+    .from('user_cookies')
+    .select('event_id')
+    .eq('cookie_id', cookieId)
+    .eq('is_organizer', true);
+
+  if (!userCookies || userCookies.length === 0) return [];
+
+  const eventIds = userCookies.map((uc) => uc.event_id);
+
+  const { data: events, error } = await supabase
+    .from('events')
+    .select('*')
+    .in('event_id', eventIds)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching organized events:', error);
+    return [];
+  }
+
+  return events || [];
+}
+
+/**
+ * Get events user has responded to (for dashboard "My Invites" tab)
+ */
+export async function getMyInvites(cookieId: string): Promise<Event[]> {
+  // Get events where user has participated but is NOT organizer
+  const { data: userCookies } = await supabase
+    .from('user_cookies')
+    .select('event_id')
+    .eq('cookie_id', cookieId)
+    .eq('is_organizer', false);
+
+  if (!userCookies || userCookies.length === 0) return [];
+
+  const eventIds = userCookies.map((uc) => uc.event_id);
+
+  const { data: events, error } = await supabase
+    .from('events')
+    .select('*')
+    .in('event_id', eventIds)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching invited events:', error);
+    return [];
+  }
+
+  return events || [];
 }
 
