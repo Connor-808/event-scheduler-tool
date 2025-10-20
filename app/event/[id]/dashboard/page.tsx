@@ -57,7 +57,20 @@ export default function DashboardPage() {
 
       // Load vote breakdown
       const breakdown = await getVoteBreakdown(eventId);
-      setTimeSlots(breakdown);
+      
+      // If no votes yet, show all timeslots with zero counts
+      if (breakdown.length === 0 && eventData.time_slots.length > 0) {
+        const emptySlots = eventData.time_slots.map(slot => ({
+          ...slot,
+          votes: [],
+          available_count: 0,
+          maybe_count: 0,
+          unavailable_count: 0,
+        }));
+        setTimeSlots(emptySlots);
+      } else {
+        setTimeSlots(breakdown);
+      }
 
       setIsLoading(false);
 
@@ -170,6 +183,7 @@ export default function DashboardPage() {
 
   const recommendedSlot = timeSlots.length > 0 ? timeSlots[0] : null;
   const participantCount = event?.participants.length || 0;
+  const isFixedTimeEvent = event?.time_slots.length === 1;
 
   return (
     <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
@@ -247,40 +261,43 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Recommended Time */}
-        {recommendedSlot && (
-          <Card className="mb-6 sm:mb-8 border-2 border-green-600/50 bg-green-600/5">
+        {/* Event Type Specific Display */}
+        {isFixedTimeEvent ? (
+          /* Fixed Time Event - RSVP Responses */
+          <Card className="mb-6 sm:mb-8 border-2 border-blue-600/50 bg-blue-600/5">
             <CardHeader>
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-3 py-1.5 text-sm font-bold bg-green-600 text-white rounded-full shadow-sm">
-                  ⭐ Best Option
+                <span className="px-3 py-1.5 text-sm font-bold bg-blue-600 text-white rounded-full shadow-sm">
+                  📅 Event Time
                 </span>
               </div>
-              <CardTitle className="text-2xl sm:text-3xl">{formatDateTime(recommendedSlot.start_time)}</CardTitle>
-              {recommendedSlot.label && (
-                <CardDescription>{recommendedSlot.label}</CardDescription>
+              <CardTitle className="text-2xl sm:text-3xl">
+                {event?.time_slots[0] ? formatDateTime(event.time_slots[0].start_time) : 'Loading...'}
+              </CardTitle>
+              {event?.time_slots[0]?.label && (
+                <CardDescription>{event.time_slots[0].label}</CardDescription>
               )}
             </CardHeader>
             <CardContent>
               <div className="space-y-5 sm:space-y-6">
-                {/* Vote Breakdown */}
+                {/* RSVP Summary */}
                 <div className="grid grid-cols-2 gap-4 sm:gap-6 text-center">
                   <div className="p-4 rounded-xl bg-green-50 dark:bg-green-900/10">
                     <div className="text-3xl sm:text-4xl font-bold text-green-600">
-                      {recommendedSlot.available_count}
+                      {recommendedSlot?.available_count || 0}
                     </div>
-                    <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">Available</div>
+                    <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">I'm In</div>
                   </div>
-                  <div className="p-4 rounded-xl bg-foreground/5">
-                    <div className="text-3xl sm:text-4xl font-bold text-foreground/40">
-                      {recommendedSlot.unavailable_count}
+                  <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/10">
+                    <div className="text-3xl sm:text-4xl font-bold text-red-600">
+                      {recommendedSlot?.unavailable_count || 0}
                     </div>
-                    <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">Not available</div>
+                    <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">Can't Make It</div>
                   </div>
                 </div>
 
                 {/* Visual Bar */}
-                {recommendedSlot.votes.length > 0 && (
+                {recommendedSlot && recommendedSlot.votes.length > 0 && (
                   <div className="h-4 rounded-full overflow-hidden flex bg-foreground/10">
                     {recommendedSlot.available_count > 0 && (
                       <div
@@ -290,94 +307,237 @@ export default function DashboardPage() {
                         }}
                       />
                     )}
+                    {recommendedSlot.unavailable_count > 0 && (
+                      <div
+                        className="bg-red-600 transition-all"
+                        style={{
+                          width: `${(recommendedSlot.unavailable_count / recommendedSlot.votes.length) * 100}%`,
+                        }}
+                      />
+                    )}
                   </div>
                 )}
 
                 <Button
-                  size="lg"
-                  onClick={() => handleLockClick(recommendedSlot)}
+                  variant="secondary"
+                  onClick={handleCopyLink}
                   className="w-full min-h-[52px]"
                 >
-                  🔒 Lock In This Time
+                  📋 Copy Event Link
                 </Button>
               </div>
             </CardContent>
           </Card>
+        ) : (
+          /* Multi-Time Event - Voting Results */
+          recommendedSlot ? (
+            <Card className="mb-6 sm:mb-8 border-2 border-green-600/50 bg-green-600/5">
+              <CardHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-3 py-1.5 text-sm font-bold bg-green-600 text-white rounded-full shadow-sm">
+                    ⭐ Best Option
+                  </span>
+                </div>
+                <CardTitle className="text-2xl sm:text-3xl">{formatDateTime(recommendedSlot.start_time)}</CardTitle>
+                {recommendedSlot.label && (
+                  <CardDescription>{recommendedSlot.label}</CardDescription>
+                )}
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-5 sm:space-y-6">
+                  {/* Vote Breakdown */}
+                  <div className="grid grid-cols-2 gap-4 sm:gap-6 text-center">
+                    <div className="p-4 rounded-xl bg-green-50 dark:bg-green-900/10">
+                      <div className="text-3xl sm:text-4xl font-bold text-green-600">
+                        {recommendedSlot.available_count}
+                      </div>
+                      <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">Available</div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-foreground/5">
+                      <div className="text-3xl sm:text-4xl font-bold text-foreground/40">
+                        {recommendedSlot.unavailable_count}
+                      </div>
+                      <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">Not available</div>
+                    </div>
+                  </div>
+
+                  {/* Visual Bar */}
+                  {recommendedSlot.votes.length > 0 && (
+                    <div className="h-4 rounded-full overflow-hidden flex bg-foreground/10">
+                      {recommendedSlot.available_count > 0 && (
+                        <div
+                          className="bg-green-600 transition-all"
+                          style={{
+                            width: `${(recommendedSlot.available_count / recommendedSlot.votes.length) * 100}%`,
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  <Button
+                    size="lg"
+                    onClick={() => handleLockClick(recommendedSlot)}
+                    className="w-full min-h-[52px]"
+                  >
+                    🔒 Lock In This Time
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="mb-6 sm:mb-8 border-2 border-blue-600/50 bg-blue-600/5">
+              <CardHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-3 py-1.5 text-sm font-bold bg-blue-600 text-white rounded-full shadow-sm">
+                    📊 Waiting for Votes
+                  </span>
+                </div>
+                <CardTitle className="text-2xl sm:text-3xl">No votes yet</CardTitle>
+                <CardDescription>Share your event link to start collecting responses</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p className="text-foreground/70">
+                    Once people start voting, you'll see the recommended time here with a "Lock In This Time" button.
+                  </p>
+                  <Button
+                    variant="secondary"
+                    onClick={handleCopyLink}
+                    className="w-full min-h-[52px]"
+                  >
+                    📋 Copy Event Link
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )
         )}
 
-        {/* All Time Slots */}
+        {/* Event Details Section */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-foreground/60 uppercase tracking-wider">All Times</CardTitle>
+            <CardTitle className="text-sm font-semibold text-foreground/60 uppercase tracking-wider">
+              {isFixedTimeEvent ? 'RSVP Responses' : 'All Times'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6">
-              {timeSlots.map((slot, index) => {
-                const availableVotes = slot.votes.filter(v => v.availability === 'available');
-                const availableNames = availableVotes
-                  .map(v => {
-                    const participant = event?.participants.find(p => p.cookie_id === v.cookie_id);
-                    return participant?.display_name || 'Anonymous';
-                  })
-                  .join(', ');
-
-                return (
-                  <div key={slot.timeslot_id} className="space-y-3">
-                    {/* Time and Count */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-baseline gap-3">
-                        <h3 className="text-2xl sm:text-3xl font-bold">
-                          {new Date(slot.start_time).toLocaleTimeString('en-US', {
+            {isFixedTimeEvent ? (
+              /* Fixed Time Event - Show Individual RSVP Responses */
+              <div className="space-y-4">
+                {recommendedSlot && recommendedSlot.votes.length > 0 ? (
+                  recommendedSlot.votes.map((vote) => {
+                    const participant = event?.participants.find(p => p.cookie_id === vote.cookie_id);
+                    const isAttending = vote.availability === 'available';
+                    
+                    return (
+                      <div key={vote.vote_id} className="flex items-center justify-between p-4 rounded-lg border border-foreground/10">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-3 h-3 rounded-full ${isAttending ? 'bg-green-500' : 'bg-red-500'}`} />
+                          <div>
+                            <div className="font-semibold text-base">
+                              {participant?.display_name || 'Anonymous'}
+                            </div>
+                            <div className="text-sm text-foreground/60">
+                              {isAttending ? 'I\'m in' : 'Can\'t make it'}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-sm text-foreground/50">
+                          {new Date(vote.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
                             hour: 'numeric',
-                            minute: '2-digit',
-                            hour12: true
+                            minute: '2-digit'
                           })}
-                        </h3>
-                        {index === 0 && (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => handleLockClick(slot)}
-                            className="text-xs"
-                          >
-                            Lock In
-                          </Button>
-                        )}
+                        </div>
                       </div>
-                      <span className="text-xl sm:text-2xl text-foreground/40 font-medium">
-                        {slot.available_count}/{slot.votes.length}
-                      </span>
-                    </div>
-
-                    {/* Progress Bar */}
-                    {slot.votes.length > 0 && (
-                      <div className="h-2 rounded-full overflow-hidden bg-foreground/10">
-                        {slot.available_count > 0 && (
-                          <div
-                            className="h-full bg-foreground rounded-full transition-all"
-                            style={{
-                              width: `${(slot.available_count / slot.votes.length) * 100}%`,
-                            }}
-                          />
-                        )}
-                      </div>
-                    )}
-
-                    {/* Names of people who voted available */}
-                    {availableNames && (
-                      <p className="text-sm text-foreground/60">
-                        {availableNames}
-                      </p>
-                    )}
-
-                    {/* Show label if exists */}
-                    {slot.label && (
-                      <p className="text-sm text-foreground/50 italic">{slot.label}</p>
-                    )}
+                    );
+                  })
+                ) : (
+                  <div className="text-center py-8 text-foreground/60">
+                    <p className="text-base font-medium">No responses yet</p>
+                    <p className="text-sm mt-2">Share your event link to start collecting RSVPs</p>
                   </div>
-                );
-              })}
-            </div>
+                )}
+              </div>
+            ) : (
+              /* Multi-Time Event - Show All Time Slots */
+              timeSlots.length === 0 ? (
+                <div className="text-center py-8 text-foreground/60">
+                  <p className="text-base font-medium">No time slots found</p>
+                  <p className="text-sm mt-2">This event may not have any time slots configured</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {timeSlots.map((slot, index) => {
+                  const availableVotes = slot.votes.filter(v => v.availability === 'available');
+                  const availableNames = availableVotes
+                    .map(v => {
+                      const participant = event?.participants.find(p => p.cookie_id === v.cookie_id);
+                      return participant?.display_name || 'Anonymous';
+                    })
+                    .join(', ');
+
+                  return (
+                    <div key={slot.timeslot_id} className="space-y-3">
+                      {/* Time and Count */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-baseline gap-3">
+                          <h3 className="text-2xl sm:text-3xl font-bold">
+                            {new Date(slot.start_time).toLocaleTimeString('en-US', {
+                              hour: 'numeric',
+                              minute: '2-digit',
+                              hour12: true
+                            })}
+                          </h3>
+                          {index === 0 && (
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => handleLockClick(slot)}
+                              className="text-xs"
+                            >
+                              Lock In
+                            </Button>
+                          )}
+                        </div>
+                        <span className="text-xl sm:text-2xl text-foreground/40 font-medium">
+                          {slot.available_count}/{slot.votes.length}
+                        </span>
+                      </div>
+
+                      {/* Progress Bar */}
+                      {slot.votes.length > 0 && (
+                        <div className="h-2 rounded-full overflow-hidden bg-foreground/10">
+                          {slot.available_count > 0 && (
+                            <div
+                              className="h-full bg-foreground rounded-full transition-all"
+                              style={{
+                                width: `${(slot.available_count / slot.votes.length) * 100}%`,
+                              }}
+                            />
+                          )}
+                        </div>
+                      )}
+
+                      {/* Names of people who voted available */}
+                      {availableNames && (
+                        <p className="text-sm text-foreground/60">
+                          {availableNames}
+                        </p>
+                      )}
+
+                      {/* Show label if exists */}
+                      {slot.label && (
+                        <p className="text-sm text-foreground/50 italic">{slot.label}</p>
+                      )}
+                    </div>
+                  );
+                })}
+                </div>
+              )
+            )}
           </CardContent>
         </Card>
 

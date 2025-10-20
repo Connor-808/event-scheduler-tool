@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -26,6 +27,7 @@ export default function EventVotingPage() {
   const [hasVoted, setHasVoted] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [cookieId, setCookieId] = useState('');
+  const [isOrganizer, setIsOrganizer] = useState(false);
 
   useEffect(() => {
     async function loadEventAndVotes() {
@@ -41,6 +43,12 @@ export default function EventVotingPage() {
       }
 
       setEvent(eventData);
+
+      // Check if user is organizer
+      const organizer = eventData.participants.find(
+        (p) => p.cookie_id === userCookieId && p.is_organizer
+      );
+      setIsOrganizer(!!organizer);
 
       // Don't set up voting if event is cancelled or locked
       if (eventData.status === 'cancelled' || eventData.status === 'locked') {
@@ -464,7 +472,29 @@ export default function EventVotingPage() {
 
           {/* Header - Exact same as organizer dashboard */}
           <div className="mb-8 sm:mb-10">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 leading-tight">{event?.title}</h1>
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-2">
+              <h1 className="text-3xl sm:text-4xl font-bold leading-tight">{event?.title}</h1>
+              {isOrganizer && (
+                <Link href={`/event/${eventId}/dashboard`}>
+                  <Button variant="secondary" size="sm" className="min-h-[40px]">
+                    <svg
+                      className="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      />
+                    </svg>
+                    View Results
+                  </Button>
+                </Link>
+              )}
+            </div>
             {event?.location && (
               <p className="text-base text-foreground/70 mb-3">📍 {event.location}</p>
             )}

@@ -154,7 +154,9 @@ export async function getVoteBreakdown(eventId: string): Promise<TimeSlotWithVot
     return [];
   }
 
-  if (!data) return [];
+  if (!data) {
+    return [];
+  }
 
   // Fetch full vote details for each timeslot (only if needed for display)
   // This is still more efficient than the previous approach
@@ -174,7 +176,7 @@ export async function getVoteBreakdown(eventId: string): Promise<TimeSlotWithVot
   });
 
   // Combine aggregated data with full vote details
-  return data.map((slot: {
+  const result = data.map((slot: {
     timeslot_id: string;
     start_time: string;
     end_time: string | null;
@@ -195,6 +197,8 @@ export async function getVoteBreakdown(eventId: string): Promise<TimeSlotWithVot
     maybe_count: Number(slot.maybe_count),
     unavailable_count: Number(slot.unavailable_count),
   }));
+  
+  return result;
 }
 
 /**
