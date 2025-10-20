@@ -236,11 +236,11 @@ export default function EventVotingPage() {
                     <p className="text-sm font-medium text-foreground/60 mb-3">Your response:</p>
                     {votes[event.time_slots[0].timeslot_id] ? (
                       <div className="space-y-4">
-                        <div className="flex items-center justify-center gap-2 text-green-600">
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span className="font-bold text-lg">I&apos;m in - I can attend</span>
+                      <div className="flex items-center justify-center gap-2 text-green-600">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="font-bold text-lg">I&apos;m in - I can attend</span>
                         </div>
                         
                         {/* Add to Calendar Button */}
@@ -683,15 +683,46 @@ export default function EventVotingPage() {
       {event && event.time_slots.length === 1 && (
         <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 z-50">
           <div className="px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+            {hasVoted ? (
+              /* Response Status - User has already responded */
+              <div className="max-w-2xl mx-auto">
+                <div className={`min-h-[52px] rounded-xl border-2 flex items-center justify-between px-4 py-3 ${
+                  votes[event.time_slots[0].timeslot_id]
+                    ? 'border-green-600 bg-green-600/10 text-green-600'
+                    : 'border-red-600 bg-red-600/10 text-red-600'
+                }`}>
+                  <div className="flex items-center gap-3">
+                    {votes[event.time_slots[0].timeslot_id] ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <div>
+                      <div className="font-semibold text-sm">Response Status</div>
+                      <div className="text-sm font-medium">
+                        {votes[event.time_slots[0].timeslot_id] ? 'Attending' : 'Can&apos;t make it'}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowConfirmation(false)}
+                    className="px-3 py-1.5 text-xs font-medium rounded-lg border border-current/30 hover:bg-current/10 transition-colors"
+                  >
+                    Edit
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* RSVP Buttons - User hasn't responded yet */
             <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto">
               <button
                 onClick={() => handleRSVP(true)}
                 disabled={isSubmitting}
-                className={`min-h-[52px] rounded-xl border-2 transition-all duration-200 flex items-center justify-center gap-2 font-semibold ${
-                  hasVoted && votes[event.time_slots[0].timeslot_id]
-                    ? 'border-green-600 bg-green-600 text-white shadow-lg'
-                    : 'border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/20 active:bg-green-600/30'
-                }`}
+                  className="min-h-[52px] rounded-xl border-2 border-green-600/50 bg-green-600/10 text-green-600 hover:bg-green-600/20 active:bg-green-600/30 transition-all duration-200 flex items-center justify-center gap-2 font-semibold"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -702,11 +733,7 @@ export default function EventVotingPage() {
               <button
                 onClick={() => handleRSVP(false)}
                 disabled={isSubmitting}
-                className={`min-h-[52px] rounded-xl border-2 transition-all duration-200 flex items-center justify-center gap-2 font-semibold ${
-                  hasVoted && !votes[event.time_slots[0].timeslot_id]
-                    ? 'border-red-600 bg-red-600 text-white shadow-lg'
-                    : 'border-red-600/50 bg-red-600/10 text-red-600 hover:bg-red-600/20 active:bg-red-600/30'
-                }`}
+                  className="min-h-[52px] rounded-xl border-2 border-red-600/50 bg-red-600/10 text-red-600 hover:bg-red-600/20 active:bg-red-600/30 transition-all duration-200 flex items-center justify-center gap-2 font-semibold"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -714,6 +741,7 @@ export default function EventVotingPage() {
                 <span>Can&apos;t make it</span>
               </button>
             </div>
+            )}
           </div>
         </div>
       )}
