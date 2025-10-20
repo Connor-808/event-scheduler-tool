@@ -218,7 +218,7 @@ export default function SharePage() {
 
           {/* Helper Text */}
           <div className="mt-8 text-center text-sm sm:text-base text-foreground/70">
-            <p className="leading-relaxed">💡 Click "View Results & Lock Time" above to see voting results and lock in the final time.</p>
+            <p className="leading-relaxed">💡 Click &quot;View Results & Lock Time&quot; above to see voting results and lock in the final time.</p>
           </div>
         </div>
       </div>

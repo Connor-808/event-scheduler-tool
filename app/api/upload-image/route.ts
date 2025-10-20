@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Upload to Supabase Storage
-    const { data, error } = await supabaseAdmin.storage
+    const { error } = await supabaseAdmin.storage
       .from('event-images')
       .upload(filePath, buffer, {
         contentType,

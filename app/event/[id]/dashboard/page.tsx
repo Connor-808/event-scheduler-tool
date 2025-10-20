@@ -335,13 +335,13 @@ export default function DashboardPage() {
                     <div className="text-3xl sm:text-4xl font-bold text-green-600">
                       {recommendedSlot?.available_count || 0}
                     </div>
-                    <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">I'm In</div>
+                    <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">I&apos;m In</div>
                   </div>
                   <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/10">
                     <div className="text-3xl sm:text-4xl font-bold text-red-600">
                       {recommendedSlot?.unavailable_count || 0}
                     </div>
-                    <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">Can't Make It</div>
+                    <div className="text-sm sm:text-base font-medium text-foreground/70 mt-1">Can&apos;t Make It</div>
                   </div>
                 </div>
 
@@ -448,7 +448,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="space-y-4">
                   <p className="text-foreground/70">
-                    Once people start voting, you'll see the recommended time here with a "Lock In This Time" button.
+                    Once people start voting, you&apos;ll see the recommended time here with a &quot;Lock In This Time&quot; button.
                   </p>
                   <Button
                     variant="secondary"

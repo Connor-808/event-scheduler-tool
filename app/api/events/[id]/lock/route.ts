@@ -23,11 +23,11 @@ export async function POST(
     const { timeslotId, cookieId } = body;
 
     // Verify event exists
-    const { event, error: eventError } = await verifyEventExists(eventId);
+    const { error: eventError } = await verifyEventExists(eventId);
     if (eventError) return eventError;
 
     // Verify user is organizer
-    const { isOrganizer, error: organizerError } = await verifyOrganizer(eventId, cookieId);
+    const { error: organizerError } = await verifyOrganizer(eventId, cookieId);
     if (organizerError) return organizerError;
 
     // Verify timeslot belongs to this event

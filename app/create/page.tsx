@@ -107,16 +107,6 @@ export default function CreateEventPage() {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type (including HEIC/HEIF for iPhone)
-      const validTypes = [
-        'image/jpeg',
-        'image/jpg', 
-        'image/png',
-        'image/gif',
-        'image/webp',
-        'image/heic',
-        'image/heif'
-      ];
-      
       const isValidType = file.type.startsWith('image/') || 
                          file.name.toLowerCase().endsWith('.heic') ||
                          file.name.toLowerCase().endsWith('.heif');
@@ -620,7 +610,7 @@ export default function CreateEventPage() {
                   </Card>
                 ) : (
                   <div className="space-y-2">
-                    {timeSlots.map((slot, index) => (
+                    {timeSlots.map((slot) => (
                       <div key={slot.id} className="group relative">
                         <div className="flex gap-2 items-start p-3 rounded-lg border border-foreground/10 bg-background hover:border-foreground/20 transition-all">
                           <div className="flex-1 min-w-0 space-y-2">

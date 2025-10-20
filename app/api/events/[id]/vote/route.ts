@@ -28,7 +28,7 @@ export async function POST(
     const { cookieId, displayName, votes } = body;
 
     // Verify event exists
-    const { event, error: eventError } = await verifyEventExists(eventId, 'event_id');
+    const { error: eventError } = await verifyEventExists(eventId, 'event_id');
     if (eventError) return eventError;
 
     // Update display name and last_active if provided
