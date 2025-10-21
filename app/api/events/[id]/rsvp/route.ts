@@ -43,7 +43,7 @@ export async function POST(
 
     const validation = validateRequiredFields(body, ['cookie_id', 'response']);
     if (!validation.valid) {
-      return errorResponse(validation.error || 'Missing required fields', 400);
+      return validation.error;
     }
 
     const { cookie_id, user_name, response } = body;
