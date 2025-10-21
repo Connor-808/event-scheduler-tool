@@ -19,10 +19,8 @@ export async function POST(
     const { id: eventId } = await params;
 
     // 1. Verify event exists
-    const event = await verifyEventExists(eventId);
-    if (!event) {
-      return errorResponse('Event not found', 404);
-    }
+    const { event, error: eventError } = await verifyEventExists(eventId);
+    if (eventError) return eventError;
 
     // 2. Verify this is a fixed-time event
     if (event.event_type !== 'fixed') {
@@ -126,10 +124,8 @@ export async function GET(
     const { id: eventId } = await params;
 
     // 1. Verify event exists
-    const event = await verifyEventExists(eventId);
-    if (!event) {
-      return errorResponse('Event not found', 404);
-    }
+    const { event, error: eventError } = await verifyEventExists(eventId);
+    if (eventError) return eventError;
 
     // 2. Verify this is a fixed-time event
     if (event.event_type !== 'fixed') {

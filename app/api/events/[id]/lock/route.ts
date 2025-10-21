@@ -34,10 +34,8 @@ export async function POST(
     const { timeslotId, cookieId } = body;
 
     // 1. Verify event exists and get full event data
-    const event = await verifyEventExists(eventId);
-    if (!event) {
-      return errorResponse('Event not found', 404);
-    }
+    const { event, error: eventError } = await verifyEventExists(eventId);
+    if (eventError) return eventError;
 
     // 2. Verify this is a polled event
     if (event.event_type !== 'polled') {
