@@ -266,7 +266,7 @@ export function FixedTimeRecipientView({ event, eventId, isOrganizer }: FixedTim
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-xl">Your Name</CardTitle>
-            <CardDescription>Optional - helps the organizer know who's responding</CardDescription>
+            <CardDescription>Optional - helps the organizer know who&apos;s responding</CardDescription>
           </CardHeader>
           <CardContent>
             <Input
@@ -282,7 +282,7 @@ export function FixedTimeRecipientView({ event, eventId, isOrganizer }: FixedTim
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-xl">Can you make it?</CardTitle>
-            <CardDescription>Let the organizer know if you'll be there</CardDescription>
+            <CardDescription>Let the organizer know if you&apos;ll be there</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
