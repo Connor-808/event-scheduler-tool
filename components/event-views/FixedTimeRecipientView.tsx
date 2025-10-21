@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { EventWithDetails, RSVP, supabase } from '@/lib/supabase';
+import { EventWithDetails, supabase } from '@/lib/supabase';
 import { getUserCookieId, formatDateTime, openCalendar, CalendarEvent } from '@/lib/utils';
 import { EventHeroImage } from '@/components/EventHeroImage';
 
@@ -131,7 +131,7 @@ export function FixedTimeRecipientView({ event, eventId, isOrganizer }: FixedTim
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        <span className="font-bold text-lg">Yes, I'll be there!</span>
+                        <span className="font-bold text-lg">Yes, I&apos;ll be there!</span>
                       </div>
                       {event.fixed_datetime && (
                         <Button
@@ -160,7 +160,7 @@ export function FixedTimeRecipientView({ event, eventId, isOrganizer }: FixedTim
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
-                      <span className="font-bold text-lg">Can't make it</span>
+                      <span className="font-bold text-lg">Can&apos;t make it</span>
                     </div>
                   )}
                   {rsvpResponse === 'maybe' && (
@@ -302,7 +302,7 @@ export function FixedTimeRecipientView({ event, eventId, isOrganizer }: FixedTim
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="font-semibold">Yes, I'll be there!</span>
+                      <span className="font-semibold">Yes, I&apos;ll be there!</span>
                   </div>
                 </button>
 
@@ -336,7 +336,7 @@ export function FixedTimeRecipientView({ event, eventId, isOrganizer }: FixedTim
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <span className="font-semibold">Can't make it</span>
+                      <span className="font-semibold">Can&apos;t make it</span>
                   </div>
                 </button>
               </div>

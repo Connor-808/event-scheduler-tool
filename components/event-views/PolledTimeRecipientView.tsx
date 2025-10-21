@@ -250,7 +250,7 @@ export function PolledTimeRecipientView({ event, eventId, isOrganizer }: PolledT
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-xl">Your Name</CardTitle>
-            <CardDescription>Optional - helps the organizer know who's responding</CardDescription>
+            <CardDescription>Optional - helps the organizer know who&apos;s responding</CardDescription>
           </CardHeader>
           <CardContent>
             <Input
@@ -266,7 +266,7 @@ export function PolledTimeRecipientView({ event, eventId, isOrganizer }: PolledT
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-xl">Which times work for you?</CardTitle>
-            <CardDescription>Select all times you're available</CardDescription>
+            <CardDescription>Select all times you&apos;re available</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">

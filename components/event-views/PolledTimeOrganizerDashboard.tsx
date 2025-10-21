@@ -270,7 +270,7 @@ export function PolledTimeOrganizerDashboard({ event, eventId }: PolledTimeOrgan
             <CardContent>
               <div className="space-y-4">
                 <p className="text-foreground/70 dark:text-foreground/80">
-                  Once people start voting, you'll see the recommended time here with a "Lock In This Time" button.
+                  Once people start voting, you&apos;ll see the recommended time here with a &quot;Lock In This Time&quot; button.
                 </p>
                 <Button
                   variant="secondary"

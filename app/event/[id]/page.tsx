@@ -56,7 +56,7 @@ export default function EventPage() {
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Event not found</h1>
-          <p className="text-foreground/70 mb-4">This event doesn't exist or has been deleted.</p>
+          <p className="text-foreground/70 mb-4">This event doesn&apos;t exist or has been deleted.</p>
         </div>
       </div>
     );

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { EventWithDetails, TimeSlotWithVotes, supabase, getVoteBreakdown } from '@/lib/supabase';
+import { EventWithDetails, TimeSlotWithVotes, supabase } from '@/lib/supabase';
 import { formatDateTime, getRelativeTime } from '@/lib/utils';
 
 interface FixedTimeOrganizerDashboardProps {
@@ -161,13 +161,13 @@ export function FixedTimeOrganizerDashboard({ event, eventId }: FixedTimeOrganiz
                   <div className="text-3xl sm:text-4xl font-bold text-green-600 dark:text-green-400">
                     {timeSlot?.available_count || 0}
                   </div>
-                  <div className="text-sm sm:text-base font-medium text-foreground/70 dark:text-foreground/90 mt-1">I'm In</div>
+                  <div className="text-sm sm:text-base font-medium text-foreground/70 dark:text-foreground/90 mt-1">I&apos;m In</div>
                 </div>
                 <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700/50">
                   <div className="text-3xl sm:text-4xl font-bold text-red-600 dark:text-red-400">
                     {timeSlot?.unavailable_count || 0}
                   </div>
-                  <div className="text-sm sm:text-base font-medium text-foreground/70 dark:text-foreground/90 mt-1">Can't Make It</div>
+                  <div className="text-sm sm:text-base font-medium text-foreground/70 dark:text-foreground/90 mt-1">Can&apos;t Make It</div>
                 </div>
               </div>
 
