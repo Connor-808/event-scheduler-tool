@@ -31,15 +31,17 @@ export async function POST(
     }
 
     // 3. Parse and validate request body
-    const body = await parseRequestBody<{
+    const bodyResult = await parseRequestBody<{
       cookie_id: string;
       user_name?: string;
       response: 'yes' | 'no' | 'maybe';
     }>(request);
 
-    if (!body) {
-      return errorResponse('Invalid request body', 400);
+    if (bodyResult.error) {
+      return bodyResult.error;
     }
+
+    const body = bodyResult.data;
 
     const validation = validateRequiredFields(body, ['cookie_id', 'response']);
     if (!validation.valid) {
