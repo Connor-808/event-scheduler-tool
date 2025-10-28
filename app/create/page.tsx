@@ -17,7 +17,6 @@ type Step = 'time-selection' | 'event-details';
 interface TimeSlotInput {
   id: string;
   start_time: string; // ISO datetime-local format
-  label: string;
 }
 
 export default function CreateEventPage() {
@@ -38,7 +37,7 @@ export default function CreateEventPage() {
     if (timeSlots.length < 10) {
       setTimeSlots([
         ...timeSlots,
-        { id: Date.now().toString(), start_time: '', label: '' },
+        { id: Date.now().toString(), start_time: '' },
       ]);
     }
   };
@@ -47,9 +46,9 @@ export default function CreateEventPage() {
     setTimeSlots(timeSlots.filter((slot) => slot.id !== id));
   };
 
-  const updateTimeSlot = (id: string, field: 'start_time' | 'label', value: string) => {
+  const updateTimeSlot = (id: string, value: string) => {
     setTimeSlots(
-      timeSlots.map((slot) => (slot.id === id ? { ...slot, [field]: value } : slot))
+      timeSlots.map((slot) => (slot.id === id ? { ...slot, start_time: value } : slot))
     );
   };
 
@@ -102,7 +101,7 @@ export default function CreateEventPage() {
         .filter((slot) => slot.start_time)
         .map((slot) => ({
           start_time: new Date(slot.start_time),
-          label: slot.label || '',
+          label: '',
         }));
 
       const cookieId = getUserCookieId();
@@ -179,19 +178,12 @@ export default function CreateEventPage() {
                   <div className="space-y-3 sm:space-y-4">
                     {timeSlots.map((slot, index) => (
                       <div key={slot.id} className="flex gap-3 items-start p-3 sm:p-4 rounded-lg border border-foreground/10 bg-foreground/5">
-                        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="flex-1">
                           <Input
                             type="datetime-local"
                             value={slot.start_time}
-                            onChange={(e) => updateTimeSlot(slot.id, 'start_time', e.target.value)}
+                            onChange={(e) => updateTimeSlot(slot.id, e.target.value)}
                             label={index === 0 ? 'Date & Time' : undefined}
-                          />
-                          <Input
-                            type="text"
-                            value={slot.label}
-                            onChange={(e) => updateTimeSlot(slot.id, 'label', e.target.value)}
-                            placeholder="Label (optional)"
-                            label={index === 0 ? 'Label' : undefined}
                           />
                         </div>
                         <Button
