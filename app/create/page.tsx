@@ -7,9 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import {
-  getThisWeekendTimes,
-  getNextWeekendTimes,
-  getWeekdayEveningTimes,
   validateEventTitle,
   validateLocation,
   getUserCookieId,
@@ -29,7 +26,6 @@ export default function CreateEventPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Time Selection State
-  const [presetType, setPresetType] = useState<'this-weekend' | 'next-weekend' | 'weekday' | null>(null);
   const [timeSlots, setTimeSlots] = useState<TimeSlotInput[]>([]);
 
   // Event Details State
@@ -38,44 +34,17 @@ export default function CreateEventPage() {
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handlePresetSelect = (type: 'this-weekend' | 'next-weekend' | 'weekday') => {
-    setPresetType(type);
-    
-    // Get preset times and convert to TimeSlotInput format
-    const presetMap = {
-      'this-weekend': getThisWeekendTimes,
-      'next-weekend': getNextWeekendTimes,
-      'weekday': getWeekdayEveningTimes,
-    };
-    const presetTimes = presetMap[type]();
-    
-    // Convert to datetime-local format for inputs
-    const slots: TimeSlotInput[] = presetTimes.map((slot, index) => ({
-      id: `preset-${index}-${Date.now()}`,
-      start_time: new Date(slot.start_time).toISOString().slice(0, 16), // datetime-local format
-      label: slot.label,
-    }));
-    
-    setTimeSlots(slots);
-  };
-
   const addCustomSlot = () => {
     if (timeSlots.length < 10) {
       setTimeSlots([
         ...timeSlots,
         { id: Date.now().toString(), start_time: '', label: '' },
       ]);
-      // Clear preset selection when adding custom slots
-      setPresetType(null);
     }
   };
 
   const removeTimeSlot = (id: string) => {
     setTimeSlots(timeSlots.filter((slot) => slot.id !== id));
-    // If we remove all slots, clear the preset selection
-    if (timeSlots.length === 1) {
-      setPresetType(null);
-    }
   };
 
   const updateTimeSlot = (id: string, field: 'start_time' | 'label', value: string) => {
@@ -88,7 +57,7 @@ export default function CreateEventPage() {
     const filledSlots = timeSlots.filter((slot) => slot.start_time);
     
     if (filledSlots.length < 2) {
-      alert('Please select a preset or add at least 2 time slots');
+      alert('Please add at least 2 time slots');
       return false;
     }
 
@@ -185,52 +154,10 @@ export default function CreateEventPage() {
             <div className="space-y-6 sm:space-y-8">
               <div className="text-center space-y-3">
                 <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When should we meet?</h1>
-                <p className="text-base sm:text-lg text-foreground/70">Choose a preset or add custom times</p>
+                <p className="text-base sm:text-lg text-foreground/70">Add your time slot options below</p>
               </div>
 
-              {/* Quick Presets */}
-              <Card>
-                <h2 className="text-lg sm:text-xl font-bold mb-4">Quick Presets</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                  <button
-                    onClick={() => handlePresetSelect('this-weekend')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
-                      presetType === 'this-weekend'
-                        ? 'border-foreground bg-foreground/10 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
-                    }`}
-                  >
-                    <div className="font-bold mb-1.5 text-base">This Weekend</div>
-                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Sat & Sun mornings</div>
-                  </button>
-
-                  <button
-                    onClick={() => handlePresetSelect('next-weekend')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
-                      presetType === 'next-weekend'
-                        ? 'border-foreground bg-foreground/10 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
-                    }`}
-                  >
-                    <div className="font-bold mb-1.5 text-base">Next Weekend</div>
-                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Next Sat & Sun</div>
-                  </button>
-
-                  <button
-                    onClick={() => handlePresetSelect('weekday')}
-                    className={`p-4 sm:p-5 rounded-xl border-2 transition-all duration-200 text-left touch-manipulation ${
-                      presetType === 'weekday'
-                        ? 'border-foreground bg-foreground/10 shadow-sm'
-                        : 'border-foreground/20 hover:border-foreground/40 active:bg-foreground/5'
-                    }`}
-                  >
-                    <div className="font-bold mb-1.5 text-base">Weekday Evenings</div>
-                    <div className="text-xs sm:text-sm text-foreground/60 leading-relaxed">Mon, Wed, Thu</div>
-                  </button>
-                </div>
-              </Card>
-
-              {/* Unified Time Slots Display */}
+              {/* Time Slots Display */}
               <Card>
                 <div className="mb-4 sm:mb-5">
                   <h2 className="text-lg sm:text-xl font-bold">Time Slots ({timeSlots.length}/10)</h2>
@@ -239,7 +166,14 @@ export default function CreateEventPage() {
                 {timeSlots.length === 0 ? (
                   <div className="text-center py-8 sm:py-12 text-foreground/60">
                     <p className="text-base font-medium mb-2">No time slots yet</p>
-                    <p className="text-sm">Select a preset above or add a custom time slot</p>
+                    <p className="text-sm mb-4">Get started by adding your first time slot</p>
+                    <Button 
+                      variant="secondary" 
+                      onClick={addCustomSlot} 
+                      className="min-h-[48px]"
+                    >
+                      + Add Time Slot
+                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-3 sm:space-y-4">
@@ -369,8 +303,13 @@ export default function CreateEventPage() {
       <div className="hidden sm:block px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           {step === 'time-selection' ? (
-            <div className="flex justify-end">
-              <Button size="lg" onClick={handleNextStep}>
+            <div className="flex justify-between items-center">
+              {timeSlots.length < 10 && (
+                <Button variant="secondary" onClick={addCustomSlot}>
+                  + Add Time Slot ({timeSlots.length}/10)
+                </Button>
+              )}
+              <Button size="lg" onClick={handleNextStep} className="ml-auto">
                 Next: Event Details
               </Button>
             </div>
