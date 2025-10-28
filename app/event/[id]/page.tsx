@@ -5,8 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { NamePrompt } from '@/components/ui/name-prompt';
 import { getEventWithDetails, EventWithDetails, Vote, supabase } from '@/lib/supabase';
-import { getUserCookieId, formatDateTime } from '@/lib/utils';
+import { getUserCookieId, formatDateTime, getUserName, hasUserName } from '@/lib/utils';
 
 interface VoteState {
   [timeslotId: string]: boolean; // true = available, false/undefined = not selected
@@ -25,6 +26,7 @@ export default function EventVotingPage() {
   const [hasVoted, setHasVoted] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [cookieId, setCookieId] = useState('');
+  const [showNamePrompt, setShowNamePrompt] = useState(false);
 
   useEffect(() => {
     async function loadEventAndVotes() {
@@ -55,17 +57,31 @@ export default function EventVotingPage() {
         .eq('event_id', eventId)
         .single();
 
+      // Determine display name priority: DB > Cookie > Empty
+      let nameToSet = '';
+      
       if (!existingCookie) {
         await supabase.from('user_cookies').insert({
           cookie_id: userCookieId,
           event_id: eventId,
           is_organizer: false,
         });
-      } else {
-        // Load existing display name
-        if (existingCookie.display_name) {
-          setDisplayName(existingCookie.display_name);
+      } else if (existingCookie.display_name) {
+        // Load existing display name from database
+        nameToSet = existingCookie.display_name;
+      }
+
+      // If no name from DB, check cookie
+      if (!nameToSet) {
+        const storedName = getUserName();
+        if (storedName) {
+          nameToSet = storedName;
         }
+      }
+
+      // Set display name if we found one
+      if (nameToSet) {
+        setDisplayName(nameToSet);
       }
 
       // Load existing votes
@@ -98,6 +114,27 @@ export default function EventVotingPage() {
   const handleSubmit = async () => {
     if (!event) return;
 
+    // Check if user has a name stored
+    if (!hasUserName() && !displayName) {
+      // Show name prompt
+      setShowNamePrompt(true);
+      return;
+    }
+
+    // Proceed with submission
+    await submitVotes(displayName);
+  };
+
+  const handleNameComplete = async (name: string) => {
+    setDisplayName(name);
+    setShowNamePrompt(false);
+    // Automatically submit votes after name is provided
+    await submitVotes(name);
+  };
+
+  const submitVotes = async (nameToSubmit: string) => {
+    if (!event) return;
+
     setIsSubmitting(true);
 
     try {
@@ -107,7 +144,7 @@ export default function EventVotingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cookieId,
-          displayName: displayName || null,
+          displayName: nameToSubmit || null,
           votes: event.time_slots.map(slot => ({
             timeslotId: slot.timeslot_id,
             availability: votes[slot.timeslot_id] ? 'available' : 'unavailable',
@@ -338,7 +375,7 @@ export default function EventVotingPage() {
               placeholder="Anonymous"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              helperText="Help others identify you"
+              helperText={displayName ? "This name will be shown to others" : "We'll ask for your name when you submit"}
               maxLength={50}
             />
           </Card>
@@ -372,6 +409,9 @@ export default function EventVotingPage() {
           </Button>
         </div>
       </div>
+
+      {/* Name Prompt Bottom Sheet */}
+      <NamePrompt isOpen={showNamePrompt} onComplete={handleNameComplete} />
     </div>
   );
 }

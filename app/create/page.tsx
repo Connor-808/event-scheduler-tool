@@ -40,7 +40,7 @@ function TimeSlotInput({ slot, index, isNew, onUpdate, onRemove, onPickerOpened 
         try {
           inputRef.current?.showPicker?.();
           onPickerOpened();
-        } catch (error) {
+        } catch {
           // showPicker() not supported or blocked, just focus
           onPickerOpened();
         }

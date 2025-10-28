@@ -21,7 +21,9 @@ export function generateEventId(): string {
  */
 
 const COOKIE_NAME = 'event_scheduler_user';
+const USER_NAME_COOKIE = 'muuvs_user_name';
 const COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 365 days in seconds
+const NAME_COOKIE_MAX_AGE = 30 * 24 * 60 * 60; // 30 days in seconds
 
 /**
  * Get or create user cookie ID
@@ -106,6 +108,36 @@ export function getCookie(name: string): string | null {
  */
 export function deleteCookie(name: string): void {
   setCookie(name, '', { maxAge: -1 });
+}
+
+/**
+ * User Name Cookie Management
+ */
+
+/**
+ * Get stored user name from cookie
+ * Returns null if no name is stored
+ */
+export function getUserName(): string | null {
+  return getCookie(USER_NAME_COOKIE);
+}
+
+/**
+ * Set user name in cookie (30 day expiration)
+ */
+export function setUserName(name: string): void {
+  const trimmedName = name.trim();
+  if (trimmedName.length >= 2 && trimmedName.length <= 30) {
+    setCookie(USER_NAME_COOKIE, trimmedName, { maxAge: NAME_COOKIE_MAX_AGE });
+  }
+}
+
+/**
+ * Check if user has a name stored
+ */
+export function hasUserName(): boolean {
+  const name = getUserName();
+  return name !== null && name.trim().length >= 2;
 }
 
 /**
