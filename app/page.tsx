@@ -67,7 +67,7 @@ export default function Home() {
           {/* Main Headline */}
           <div className="space-y-4 sm:space-y-5">
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-none">
-              IRL &gt; URL
+              Plan a hangout
             </h1>
             <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-foreground/90 leading-tight px-4">
               One link. Everyone votes. Plans locked.
