@@ -187,18 +187,35 @@ export default function CreateEventPage() {
                         className="group relative bg-background rounded-2xl border-2 border-foreground/10 hover:border-foreground/20 transition-all duration-200 overflow-hidden"
                       >
                         {/* Slot Number Badge */}
-                        <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center text-sm font-bold text-foreground/70 z-10">
+                        <div className="absolute top-5 left-4 w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center text-sm font-bold text-foreground/70 z-10">
                           {index + 1}
                         </div>
                         
                         {/* Main Content */}
-                        <div className="pl-16 pr-16 py-4">
-                          <Input
-                            type="datetime-local"
-                            value={slot.start_time}
-                            onChange={(e) => updateTimeSlot(slot.id, e.target.value)}
-                            className="text-base"
-                          />
+                        <div className="pl-16 pr-16 py-3">
+                          <div className="relative">
+                            {/* Calendar Icon */}
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                              <svg className="w-5 h-5 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            
+                            {/* Date Preview Helper Text */}
+                            {!slot.start_time && (
+                              <div className="absolute left-12 top-1/2 -translate-y-1/2 pointer-events-none text-foreground/40 text-base">
+                                Select date and time
+                              </div>
+                            )}
+                            
+                            {/* Date Input */}
+                            <input
+                              type="datetime-local"
+                              value={slot.start_time}
+                              onChange={(e) => updateTimeSlot(slot.id, e.target.value)}
+                              className="w-full min-h-[60px] pl-12 pr-4 py-4 text-base font-medium rounded-xl border-2 border-foreground/10 bg-background focus:border-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all duration-200 touch-manipulation"
+                            />
+                          </div>
                         </div>
 
                         {/* Delete Button */}
