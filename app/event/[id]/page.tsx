@@ -49,6 +49,11 @@ export default function EventVotingPage() {
         return;
       }
 
+      // Check if user is the organizer of this event
+      const isOrganizer = eventData.participants.some(
+        (p) => p.cookie_id === userCookieId && p.is_organizer
+      );
+
       // Create user_cookies record if needed
       const { data: existingCookie } = await supabase
         .from('user_cookies')
@@ -61,10 +66,11 @@ export default function EventVotingPage() {
       let nameToSet = '';
       
       if (!existingCookie) {
+        // Insert with correct organizer status
         await supabase.from('user_cookies').insert({
           cookie_id: userCookieId,
           event_id: eventId,
-          is_organizer: false,
+          is_organizer: isOrganizer,
         });
       } else if (existingCookie.display_name) {
         // Load existing display name from database

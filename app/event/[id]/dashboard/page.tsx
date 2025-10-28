@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Modal, ModalFooter } from '@/components/ui/modal';
@@ -165,6 +166,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex gap-3">
+            <Link href={`/event/${eventId}`}>
+              <Button variant="secondary" className="min-h-[48px]">
+                Vote on Your Poll
+              </Button>
+            </Link>
             <Button variant="secondary" onClick={handleCopyLink} className="min-h-[48px]">
               {copied ? '✓ Copied!' : '📋 Copy Link'}
             </Button>
