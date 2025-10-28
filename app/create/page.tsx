@@ -163,39 +163,69 @@ export default function CreateEventPage() {
                 </div>
 
                 {timeSlots.length === 0 ? (
-                  <div className="text-center py-8 sm:py-12 text-foreground/60">
-                    <p className="text-base font-medium mb-2">No time slots yet</p>
-                    <p className="text-sm mb-4">Get started by adding your first time slot</p>
+                  <div className="text-center py-12 sm:py-16 text-foreground/60">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-foreground/5 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-lg font-semibold mb-2">No time slots yet</p>
+                    <p className="text-sm mb-6">Add at least 2 options for your event</p>
                     <Button 
                       variant="secondary" 
                       onClick={addCustomSlot} 
-                      className="min-h-[48px]"
+                      className="min-h-[52px] px-6"
                     >
-                      + Add Time Slot
+                      + Add First Time Slot
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-3">
                     {timeSlots.map((slot, index) => (
-                      <div key={slot.id} className="flex gap-3 items-start p-3 sm:p-4 rounded-lg border border-foreground/10 bg-foreground/5">
-                        <div className="flex-1">
+                      <div 
+                        key={slot.id} 
+                        className="group relative bg-background rounded-2xl border-2 border-foreground/10 hover:border-foreground/20 transition-all duration-200 overflow-hidden"
+                      >
+                        {/* Slot Number Badge */}
+                        <div className="absolute top-4 left-4 w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center text-sm font-bold text-foreground/70 z-10">
+                          {index + 1}
+                        </div>
+                        
+                        {/* Main Content */}
+                        <div className="pl-16 pr-16 py-4">
                           <Input
                             type="datetime-local"
                             value={slot.start_time}
                             onChange={(e) => updateTimeSlot(slot.id, e.target.value)}
-                            label={index === 0 ? 'Date & Time' : undefined}
+                            className="text-base"
                           />
                         </div>
-                        <Button
-                          variant="tertiary"
-                          size="sm"
+
+                        {/* Delete Button */}
+                        <button
                           onClick={() => removeTimeSlot(slot.id)}
-                          className={index === 0 ? 'mt-8 sm:mt-9' : ''}
+                          className="absolute top-1/2 -translate-y-1/2 right-4 w-10 h-10 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-200 flex items-center justify-center touch-manipulation"
+                          aria-label="Remove time slot"
                         >
-                          ✕
-                        </Button>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
                       </div>
                     ))}
+
+                    {/* Add Another Button - Inline with slots */}
+                    {timeSlots.length < 10 && (
+                      <button
+                        onClick={addCustomSlot}
+                        className="w-full py-5 rounded-2xl border-2 border-dashed border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5 active:bg-foreground/10 transition-all duration-200 flex items-center justify-center gap-2 text-foreground/70 hover:text-foreground font-medium touch-manipulation"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Another Time Slot
+                      </button>
+                    )}
                   </div>
                 )}
               </Card>
@@ -252,29 +282,19 @@ export default function CreateEventPage() {
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
         <div className="px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           {step === 'time-selection' ? (
-            <div className="space-y-3">
-              {/* Add Time Slot button - always show if under limit */}
-              {timeSlots.length < 10 && (
-                <Button 
-                  variant="secondary" 
-                  onClick={addCustomSlot} 
-                  className="w-full min-h-[52px]"
-                >
-                  + Add Time Slot ({timeSlots.length}/10)
-                </Button>
-              )}
-              
-              {/* Main CTA */}
-              <Button size="lg" onClick={handleNextStep} className="w-full min-h-[52px] shadow-lg">
-                Next: Event Details →
-              </Button>
-            </div>
+            <Button 
+              size="lg" 
+              onClick={handleNextStep} 
+              className="w-full min-h-[56px] shadow-lg rounded-2xl font-semibold"
+            >
+              Continue to Event Details →
+            </Button>
           ) : (
             <div className="flex gap-3">
               <Button 
                 variant="secondary" 
                 onClick={() => setStep('time-selection')}
-                className="flex-1 min-h-[52px]"
+                className="flex-1 min-h-[56px] rounded-2xl font-semibold"
               >
                 ← Back
               </Button>
@@ -282,7 +302,7 @@ export default function CreateEventPage() {
                 size="lg" 
                 onClick={handleCreateEvent} 
                 isLoading={isLoading}
-                className="flex-[2] min-h-[52px] shadow-lg"
+                className="flex-[2] min-h-[56px] shadow-lg rounded-2xl font-semibold"
               >
                 Create Event
               </Button>
@@ -295,22 +315,26 @@ export default function CreateEventPage() {
       <div className="hidden sm:block px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           {step === 'time-selection' ? (
-            <div className="flex justify-between items-center">
-              {timeSlots.length < 10 && (
-                <Button variant="secondary" onClick={addCustomSlot}>
-                  + Add Time Slot ({timeSlots.length}/10)
-                </Button>
-              )}
-              <Button size="lg" onClick={handleNextStep} className="ml-auto">
-                Next: Event Details
+            <div className="flex justify-end">
+              <Button size="lg" onClick={handleNextStep} className="rounded-2xl px-8">
+                Continue to Event Details →
               </Button>
             </div>
           ) : (
             <div className="flex gap-3 justify-between">
-              <Button variant="secondary" onClick={() => setStep('time-selection')}>
-                Back
+              <Button 
+                variant="secondary" 
+                onClick={() => setStep('time-selection')}
+                className="rounded-2xl px-6"
+              >
+                ← Back
               </Button>
-              <Button size="lg" onClick={handleCreateEvent} isLoading={isLoading}>
+              <Button 
+                size="lg" 
+                onClick={handleCreateEvent} 
+                isLoading={isLoading}
+                className="rounded-2xl px-8"
+              >
                 Create Event
               </Button>
             </div>
