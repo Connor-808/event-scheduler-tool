@@ -89,7 +89,7 @@ function TimeSlotInput({ slot, index, isNew, onUpdate, onRemove, onPickerOpened 
 
 export default function CreateEventPage() {
   const router = useRouter();
-  const [step, setStep] = useState<Step>('time-selection');
+  const [step, setStep] = useState<Step>('event-details');
   const [isLoading, setIsLoading] = useState(false);
 
   // Time Selection State
@@ -123,25 +123,7 @@ export default function CreateEventPage() {
     );
   };
 
-  const validateTimeSelection = (): boolean => {
-    const filledSlots = timeSlots.filter((slot) => slot.start_time);
-    
-    if (filledSlots.length < 2) {
-      alert('Please add at least 2 time slots');
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleNextStep = () => {
-    if (validateTimeSelection()) {
-      setStep('event-details');
-    }
-  };
-
-  const handleCreateEvent = async () => {
-    // Validate event details
+  const validateEventDetails = (): boolean => {
     const newErrors: Record<string, string> = {};
 
     const titleValidation = validateEventTitle(title);
@@ -160,10 +142,28 @@ export default function CreateEventPage() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      return;
+      return false;
     }
 
     setErrors({});
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (validateEventDetails()) {
+      setStep('time-selection');
+    }
+  };
+
+  const handleCreateEvent = async () => {
+    // Validate time slots
+    const filledSlots = timeSlots.filter((slot) => slot.start_time);
+    
+    if (filledSlots.length < 2) {
+      alert('Please add at least 2 time slots');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -212,19 +212,63 @@ export default function CreateEventPage() {
           {/* Progress Indicator */}
           <div className="mb-8 sm:mb-10">
             <div className="flex items-center justify-center gap-2 sm:gap-3">
-              <div className={`h-2 w-20 sm:w-24 rounded-full transition-all duration-300 ${step === 'time-selection' ? 'bg-foreground' : 'bg-foreground/20'}`} />
               <div className={`h-2 w-20 sm:w-24 rounded-full transition-all duration-300 ${step === 'event-details' ? 'bg-foreground' : 'bg-foreground/20'}`} />
+              <div className={`h-2 w-20 sm:w-24 rounded-full transition-all duration-300 ${step === 'time-selection' ? 'bg-foreground' : 'bg-foreground/20'}`} />
             </div>
             <p className="text-center text-sm sm:text-base text-foreground/70 mt-3 font-medium">
-              {step === 'time-selection' ? 'Step 1 of 2: Choose Times' : 'Step 2 of 2: Event Details'}
+              {step === 'event-details' ? 'Step 1 of 2: Event Details' : 'Step 2 of 2: Choose Times'}
             </p>
           </div>
+
+          {step === 'event-details' && (
+            <div className="space-y-6 sm:space-y-8">
+              <div className="text-center space-y-3">
+                <h1 className="text-3xl sm:text-4xl font-bold leading-tight">What are you planning?</h1>
+                <p className="text-base sm:text-lg text-foreground/70">Tell us about your event</p>
+              </div>
+
+              <Card>
+                <div className="space-y-6 sm:space-y-7">
+                  <Input
+                    label="Event Title"
+                    placeholder="What are we doing?"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    error={errors.title}
+                    required
+                    maxLength={100}
+                    helperText={`${title.length}/100 characters`}
+                  />
+
+                  <Input
+                    label="Location"
+                    placeholder="Where should we meet?"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    error={errors.location}
+                    maxLength={200}
+                    helperText="Optional"
+                  />
+
+                  <Textarea
+                    label="Additional Notes"
+                    placeholder="Any other details?"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    error={errors.notes}
+                    maxLength={500}
+                    helperText={`Optional - ${notes.length}/500 characters`}
+                  />
+                </div>
+              </Card>
+            </div>
+          )}
 
           {step === 'time-selection' && (
             <div className="space-y-6 sm:space-y-8">
               <div className="text-center space-y-3">
-                <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When should we meet?</h1>
-                <p className="text-base sm:text-lg text-foreground/70">Add your time slot options below</p>
+                <h1 className="text-3xl sm:text-4xl font-bold leading-tight">When works for you?</h1>
+                <p className="text-base sm:text-lg text-foreground/70">Add at least 2 time options</p>
               </div>
 
               {/* Time Slots Display */}
@@ -280,69 +324,25 @@ export default function CreateEventPage() {
               </Card>
             </div>
           )}
-
-          {step === 'event-details' && (
-            <div className="space-y-6 sm:space-y-8">
-              <div className="text-center space-y-3">
-                <h1 className="text-3xl sm:text-4xl font-bold leading-tight">Event Details</h1>
-                <p className="text-base sm:text-lg text-foreground/70">Tell everyone what you&apos;re planning</p>
-              </div>
-
-              <Card>
-                <div className="space-y-6 sm:space-y-7">
-                  <Input
-                    label="Event Title"
-                    placeholder="What are we doing?"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    error={errors.title}
-                    required
-                    maxLength={100}
-                    helperText={`${title.length}/100 characters`}
-                  />
-
-                  <Input
-                    label="Location"
-                    placeholder="Where should we meet?"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    error={errors.location}
-                    maxLength={200}
-                    helperText="Optional"
-                  />
-
-                  <Textarea
-                    label="Additional Notes"
-                    placeholder="Any other details?"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    error={errors.notes}
-                    maxLength={500}
-                    helperText={`Optional - ${notes.length}/500 characters`}
-                  />
-                </div>
-              </Card>
-            </div>
-          )}
         </div>
       </div>
 
       {/* Fixed Bottom CTA */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-foreground/10 sm:hidden z-50">
         <div className="px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          {step === 'time-selection' ? (
+          {step === 'event-details' ? (
             <Button 
               size="lg" 
               onClick={handleNextStep} 
               className="w-full min-h-[56px] shadow-lg rounded-2xl font-semibold"
             >
-              Continue to Event Details →
+              Continue to Time Slots →
             </Button>
           ) : (
             <div className="flex gap-3">
               <Button 
                 variant="secondary" 
-                onClick={() => setStep('time-selection')}
+                onClick={() => setStep('event-details')}
                 className="flex-1 min-h-[56px] rounded-2xl font-semibold"
               >
                 ← Back
@@ -363,17 +363,17 @@ export default function CreateEventPage() {
       {/* Desktop buttons - hidden on mobile */}
       <div className="hidden sm:block px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          {step === 'time-selection' ? (
+          {step === 'event-details' ? (
             <div className="flex justify-end">
               <Button size="lg" onClick={handleNextStep} className="rounded-2xl px-8">
-                Continue to Event Details →
+                Continue to Time Slots →
               </Button>
             </div>
           ) : (
             <div className="flex gap-3 justify-between">
               <Button 
                 variant="secondary" 
-                onClick={() => setStep('time-selection')}
+                onClick={() => setStep('event-details')}
                 className="rounded-2xl px-6"
               >
                 ← Back
