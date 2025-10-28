@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,74 @@ interface TimeSlotInput {
   start_time: string; // ISO datetime-local format
 }
 
+interface TimeSlotInputProps {
+  slot: TimeSlotInput;
+  index: number;
+  isNew: boolean;
+  onUpdate: (id: string, value: string) => void;
+  onRemove: (id: string) => void;
+  onPickerOpened: () => void;
+}
+
+function TimeSlotInput({ slot, index, isNew, onUpdate, onRemove, onPickerOpened }: TimeSlotInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isNew && inputRef.current) {
+      // Small delay to ensure the input is fully rendered
+      setTimeout(() => {
+        inputRef.current?.focus();
+        // Try to open the picker (may not work on all browsers/devices)
+        try {
+          inputRef.current?.showPicker?.();
+          onPickerOpened();
+        } catch (error) {
+          // showPicker() not supported or blocked, just focus
+          onPickerOpened();
+        }
+      }, 100);
+    }
+  }, [isNew, onPickerOpened]);
+
+  return (
+    <div className="group relative">
+      {/* Time Slot Card */}
+      <div className="relative bg-foreground/[0.03] hover:bg-foreground/[0.05] rounded-xl border border-foreground/10 hover:border-foreground/20 transition-all duration-200">
+        <div className="flex items-center gap-3 px-4 py-3">
+          {/* Slot Number */}
+          <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-foreground/10 flex items-center justify-center">
+            <span className="text-sm font-semibold text-foreground/70">{index + 1}</span>
+          </div>
+          
+          {/* Date/Time Input */}
+          <div className="flex-1 relative">
+            <input
+              ref={inputRef}
+              type="datetime-local"
+              value={slot.start_time}
+              onChange={(e) => onUpdate(slot.id, e.target.value)}
+              placeholder="Select date and time"
+              className="w-full h-10 px-3 text-[15px] font-medium bg-transparent border-none focus:outline-none focus:ring-0 appearance-none transition-colors"
+              style={{ colorScheme: 'light dark' }}
+            />
+          </div>
+
+          {/* Delete Button */}
+          <button
+            onClick={() => onRemove(slot.id)}
+            className="flex-shrink-0 w-8 h-8 rounded-lg hover:bg-red-500/10 text-foreground/40 hover:text-red-600 transition-all duration-200 flex items-center justify-center group/delete"
+            aria-label="Remove time slot"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CreateEventPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>('time-selection');
@@ -26,6 +94,7 @@ export default function CreateEventPage() {
 
   // Time Selection State
   const [timeSlots, setTimeSlots] = useState<TimeSlotInput[]>([]);
+  const [newSlotId, setNewSlotId] = useState<string | null>(null);
 
   // Event Details State
   const [title, setTitle] = useState('');
@@ -35,10 +104,12 @@ export default function CreateEventPage() {
 
   const addCustomSlot = () => {
     if (timeSlots.length < 10) {
+      const newId = Date.now().toString();
       setTimeSlots([
         ...timeSlots,
-        { id: Date.now().toString(), start_time: '' },
+        { id: newId, start_time: '' },
       ]);
+      setNewSlotId(newId);
     }
   };
 
@@ -181,43 +252,15 @@ export default function CreateEventPage() {
                 ) : (
                   <div className="space-y-3">
                     {timeSlots.map((slot, index) => (
-                      <div 
-                        key={slot.id} 
-                        className="group relative"
-                      >
-                        {/* Time Slot Card */}
-                        <div className="relative bg-foreground/[0.03] hover:bg-foreground/[0.05] rounded-xl border border-foreground/10 hover:border-foreground/20 transition-all duration-200">
-                          <div className="flex items-center gap-3 px-4 py-3">
-                            {/* Slot Number */}
-                            <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-foreground/10 flex items-center justify-center">
-                              <span className="text-sm font-semibold text-foreground/70">{index + 1}</span>
-                            </div>
-                            
-                            {/* Date/Time Input */}
-                            <div className="flex-1 relative">
-                              <input
-                                type="datetime-local"
-                                value={slot.start_time}
-                                onChange={(e) => updateTimeSlot(slot.id, e.target.value)}
-                                placeholder="Select date and time"
-                                className="w-full h-10 px-3 text-[15px] font-medium bg-transparent border-none focus:outline-none focus:ring-0 appearance-none transition-colors"
-                                style={{ colorScheme: 'light dark' }}
-                              />
-                            </div>
-
-                            {/* Delete Button */}
-                            <button
-                              onClick={() => removeTimeSlot(slot.id)}
-                              className="flex-shrink-0 w-8 h-8 rounded-lg hover:bg-red-500/10 text-foreground/40 hover:text-red-600 transition-all duration-200 flex items-center justify-center group/delete"
-                              aria-label="Remove time slot"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                      <TimeSlotInput
+                        key={slot.id}
+                        slot={slot}
+                        index={index}
+                        isNew={slot.id === newSlotId}
+                        onUpdate={updateTimeSlot}
+                        onRemove={removeTimeSlot}
+                        onPickerOpened={() => setNewSlotId(null)}
+                      />
                     ))}
 
                     {/* Add Another Button */}
