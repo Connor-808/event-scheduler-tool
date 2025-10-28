@@ -180,30 +180,30 @@ export default function CreateEventPage() {
                     </Button>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-4 mx-4">
                     {timeSlots.map((slot, index) => (
                       <div 
                         key={slot.id} 
-                        className="group relative bg-background rounded-2xl border-2 border-foreground/10 hover:border-foreground/20 transition-all duration-200 overflow-hidden"
+                        className="group relative bg-background rounded-2xl border-2 border-foreground/10 hover:border-foreground/20 transition-all duration-200 overflow-visible"
                       >
-                        {/* Slot Number Badge */}
-                        <div className="absolute top-5 left-4 w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center text-sm font-bold text-foreground/70 z-10">
+                        {/* Slot Number Badge - Outside the card */}
+                        <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-foreground text-background dark:bg-background dark:text-foreground dark:border-2 dark:border-foreground/20 flex items-center justify-center text-base font-bold shadow-lg z-20">
                           {index + 1}
                         </div>
                         
-                        {/* Main Content */}
-                        <div className="pl-16 pr-16 py-3">
+                        {/* Main Content Area */}
+                        <div className="pl-10 pr-14 py-5">
                           <div className="relative">
                             {/* Calendar Icon */}
-                            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-                              <svg className="w-5 h-5 text-foreground/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+                              <svg className="w-6 h-6 text-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
                             </div>
                             
                             {/* Date Preview Helper Text */}
                             {!slot.start_time && (
-                              <div className="absolute left-12 top-1/2 -translate-y-1/2 pointer-events-none text-foreground/40 text-base">
+                              <div className="absolute left-14 top-1/2 -translate-y-1/2 pointer-events-none text-foreground/50 text-base select-none">
                                 Select date and time
                               </div>
                             )}
@@ -213,7 +213,8 @@ export default function CreateEventPage() {
                               type="datetime-local"
                               value={slot.start_time}
                               onChange={(e) => updateTimeSlot(slot.id, e.target.value)}
-                              className="w-full min-h-[60px] pl-12 pr-4 py-4 text-base font-medium rounded-xl border-2 border-foreground/10 bg-background focus:border-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all duration-200 touch-manipulation"
+                              className="w-full min-h-[64px] pl-14 pr-5 py-5 text-base font-medium rounded-xl border-2 border-foreground/10 bg-background focus:border-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 transition-all duration-200 touch-manipulation appearance-none"
+                              style={{ colorScheme: 'light dark' }}
                             />
                           </div>
                         </div>
@@ -221,11 +222,11 @@ export default function CreateEventPage() {
                         {/* Delete Button */}
                         <button
                           onClick={() => removeTimeSlot(slot.id)}
-                          className="absolute top-1/2 -translate-y-1/2 right-4 w-10 h-10 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 active:scale-95 transition-all duration-200 flex items-center justify-center touch-manipulation"
+                          className="absolute -right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-700 active:scale-95 transition-all duration-200 flex items-center justify-center touch-manipulation shadow-lg z-20"
                           aria-label="Remove time slot"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </button>
                       </div>
@@ -235,9 +236,9 @@ export default function CreateEventPage() {
                     {timeSlots.length < 10 && (
                       <button
                         onClick={addCustomSlot}
-                        className="w-full py-5 rounded-2xl border-2 border-dashed border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5 active:bg-foreground/10 transition-all duration-200 flex items-center justify-center gap-2 text-foreground/70 hover:text-foreground font-medium touch-manipulation"
+                        className="w-full py-6 rounded-2xl border-2 border-dashed border-foreground/20 hover:border-foreground/40 hover:bg-foreground/5 active:bg-foreground/10 transition-all duration-200 flex items-center justify-center gap-3 text-foreground/70 hover:text-foreground font-semibold touch-manipulation"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                         </svg>
                         Add Another Time Slot
