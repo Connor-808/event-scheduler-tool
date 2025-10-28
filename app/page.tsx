@@ -13,6 +13,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col pb-24 sm:pb-28">
+      {/* Header with My Hangouts button */}
+      <header className="absolute top-0 right-0 p-4 sm:p-6 z-10">
+        <Link href="/my-events">
+          <Button variant="secondary" className="shadow-sm">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            My Hangouts
+          </Button>
+        </Link>
+      </header>
+
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
         <div className="w-full text-center space-y-6 sm:space-y-8 max-w-4xl mx-auto">
